@@ -49,7 +49,7 @@ Un sistema IoT completo para granjas lecheras inteligentes con arquitectura de m
 ### 1. Clonar el Repositorio
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/cosva-lab/cosva-iot-app.git
 cd cosva-iot-app
 ```
 
