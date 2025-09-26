@@ -43,3 +43,4 @@ tmp/
 temp/
 .turbo/
 .npmrc
+config.yml

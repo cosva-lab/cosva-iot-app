@@ -53,13 +53,19 @@ git clone https://github.com/cosva-lab/cosva-iot-app.git
 cd cosva-iot-app
 ```
 
-### 2. Configurar Variables de Entorno
+### 2. Configurar Archivos de Configuración
 
+#### Variables de Entorno
 ```bash
 cp env.example .env
 ```
 
-Edita el archivo `.env` con tus configuraciones específicas:
+#### Configuración de Granja y Sensores
+```bash
+cp config.example.yml config.yml
+```
+
+**Edita el archivo `.env`** con tus configuraciones específicas:
 
 ```env
 # Base de Datos
@@ -86,6 +92,14 @@ API_KEY=your-api-key-here
 DASHBOARD_SERVICE_PORT=3000
 NODE_ENV=production
 ```
+
+**Personaliza el archivo `config.yml`** según tu granja:
+
+- **ID y nombre de granja**: Actualiza `farm.id` y `farm.name`
+- **Establos**: Configura la cantidad de establos necesarios
+- **Sensores**: Define los sensores RFID (serial o WiFi) para cada establo
+- **Puertos serie**: Ajusta `/dev/ttyUSB*` según tu hardware
+- **IPs WiFi**: Configura las direcciones IP de sensores inalámbricos
 
 ### 3. Configurar Acceso a Paquetes Privados
 
@@ -228,20 +242,53 @@ npm run docker:prod:down
 ## ⚙️ Configuración
 
 ### config.yml
-El archivo `config.yml` contiene la configuración estática de la granja:
+El archivo `config.yml` contiene la configuración estática de la granja y sensores:
 
 ```yaml
 farm:
   id: 'farm-001'
   name: 'Main Dairy Farm'
 
+# Configuración de establos
 stalls:
   - id: 'stall-001'
     number: 1
     sensor_id: 'RFID01'
     status: 'available'
-  # ... más establos
+  - id: 'stall-002'
+    number: 2
+    sensor_id: 'RFID02'
+    status: 'available'
+  # ... hasta 6 establos
+
+# Configuración de sensores
+sensors:
+  - sensor_id: 'RFID01'
+    stall_number: 1
+    protocol: 'serial'        # serial o wifi
+    port: '/dev/ttyUSB0'      # para serial
+    baud_rate: 9600
+    timeout: 2
+    
+  - sensor_id: 'RFID03'
+    stall_number: 3
+    protocol: 'wifi'          # sensor WiFi
+    ip: '192.168.1.102'       # IP del sensor
+    port_number: 8080
+    timeout: 2
 ```
+
+#### Tipos de Sensores Soportados
+
+**Sensores Serial (USB/RS485):**
+- Puerto: `/dev/ttyUSB0`, `/dev/ttyUSB1`, etc.
+- Baud Rate: 9600 (configurable)
+- Timeout: 2 segundos
+
+**Sensores WiFi/Ethernet:**
+- IP: Dirección IP del sensor
+- Puerto: Puerto de comunicación (típicamente 8080)
+- Timeout: 2 segundos
 
 ### Variables de Entorno
 Las configuraciones dinámicas se manejan via variables de entorno:
@@ -297,11 +344,71 @@ cosva-iot-app/
 └── package.json           # Configuración raíz
 ```
 
-### Agregar Nuevos Sensores
+### Paquetes Cosva Lab
 
-1. Edita `config.yml` para agregar el nuevo stall
-2. Asegúrate de que el sensor tenga un `sensor_id` único
-3. Reinicia el sensor service
+El proyecto utiliza los siguientes paquetes privados de la organización:
+
+- **@cosva-lab/iot-sensor** (v1.0.1): Manejo de sensores RFID y detección de presencia
+- **@cosva-lab/iot-dashboard** (v1.0.0): Interfaz web y componentes del dashboard  
+- **@cosva-lab/iot-db** (v1.0.1): Modelos y esquemas de base de datos
+- **@cosva-lab/iot-shared** (v1.0.3): Utilidades y tipos compartidos
+
+Estos paquetes están alojados en GitHub Packages y requieren autenticación (ver configuración `.npmrc`).
+
+### Configuración de Sensores
+
+#### Agregar Nuevos Sensores
+
+1. **Agregar el establo** en la sección `stalls` de `config.yml`:
+```yaml
+stalls:
+  - id: 'stall-007'
+    number: 7
+    sensor_id: 'RFID07'
+    status: 'available'
+```
+
+2. **Configurar el sensor** en la sección `sensors`:
+
+**Para sensor Serial:**
+```yaml
+sensors:
+  - sensor_id: 'RFID07'
+    stall_number: 7
+    protocol: 'serial'
+    port: '/dev/ttyUSB4'
+    baud_rate: 9600
+    timeout: 2
+```
+
+**Para sensor WiFi:**
+```yaml
+sensors:
+  - sensor_id: 'RFID07'
+    stall_number: 7
+    protocol: 'wifi'
+    ip: '192.168.1.107'
+    port_number: 8080
+    timeout: 2
+```
+
+3. **Reiniciar el servicio de sensores**:
+```bash
+docker-compose restart sensor-service
+```
+
+#### Acceso a Puertos Serie en Docker
+
+Para sensores serial, asegúrate de que el contenedor tenga acceso a los dispositivos USB:
+
+```yaml
+# En docker-compose.yml
+sensor-service:
+  devices:
+    - /dev/ttyUSB0:/dev/ttyUSB0
+    - /dev/ttyUSB1:/dev/ttyUSB1
+    # Agregar más según necesidad
+```
 
 ### Desarrollo Local
 
