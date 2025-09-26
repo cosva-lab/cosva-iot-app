@@ -1,0 +1,36 @@
+# Stage 1: Build shared package
+FROM node:22-alpine AS builder
+
+# Create app user (must be done as root)
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001
+
+WORKDIR /app
+
+# Copy root package.json for caching
+COPY package*.json ./
+COPY .npmrc ./
+COPY prisma.config.ts ./
+
+# Install all dependencies
+RUN npm i
+
+# Stage 2: Final image
+FROM node:22-alpine
+
+# Create app user
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001
+
+WORKDIR /app
+
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/node_modules/ ./node_modules/
+COPY --from=builder /app/.npmrc ./
+COPY --from=builder /app/prisma.config.ts ./
+
+# Set proper ownership
+RUN chown -R nodejs:nodejs /app
+
+# Keep the container running (optional)
+CMD ["tail", "-f", "/dev/null"]

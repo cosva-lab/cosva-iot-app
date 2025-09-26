@@ -1,0 +1,38 @@
+{
+  "name": "@cosva-lab/iot-app",
+  "version": "1.0.0",
+  "description": "Smart milking farm IoT system with microservices architecture",
+  "workspaces": [
+    "services/*"
+  ],
+  "scripts": {
+    "start": "turbo run start --parallel --filter=@cosva-lab/sensor-service --filter=@cosva-lab/sync-service --filter=@cosva-lab/dashboard-service",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:prod": "docker-compose --profile prod up -d",
+    "docker:prod:down": "docker-compose --profile prod down",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:seed": "node scripts/seed.js",
+    "build:shared": "./scripts/docker/build-shared-base.sh",
+    "docker:clean": "./scripts/clean-docker.sh",
+    "clean": "rm -rf node_modules && rm -rf */node_modules && rm -rf */*/node_modules",
+    "install:all": "npm install && npm install --workspaces"
+  },
+  "dependencies": {
+    "@cosva-lab/iot-db": "^1.0.1",
+    "@cosva-lab/iot-shared": "^1.0.3",
+    "@prisma/client": "^6.16.2",
+    "prisma": "^6.16.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/uuid": "^9.0.7",
+    "rimraf": "^6.0.1",
+    "turbo": "^2.5.7"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "packageManager": "npm@10.9.2"
+}

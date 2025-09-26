@@ -1,0 +1,202 @@
+# Cosva IoT Docker Compose
+# Supports both development and production modes
+# Use: docker-compose up -d (development - infrastructure only)
+# Use: docker-compose --profile prod up -d (production - all services)
+
+x-common-env: &common-env
+  CONFIG_FILE: ${CONFIG_FILE:-config.yml}
+  DATABASE_URL: postgresql://${DB_USERNAME}:${DB_PASSWORD}@postgres:5432/${DB_NAME}?schema=public
+  NODE_ENV: ${NODE_ENV:-production}
+  MQTT_BROKER_URL: mqtt://mosquitto:1883
+  MQTT_USERNAME: ${MQTT_USERNAME:-cosva_service}
+  MQTT_PASSWORD: ${MQTT_PASSWORD:-cosva123}
+  MQTT_CLIENT_ID: ${MQTT_CLIENT_ID:-cosva-iot-client}
+  LOG_LEVEL: ${LOG_LEVEL:-INFO}
+
+x-config-volume: &config-volume ./${CONFIG_FILE:-config.yml}:/app/${CONFIG_FILE:-config.yml}:ro
+
+services:
+  # MQTT Broker (Eclipse Mosquitto)
+  mosquitto:
+    image: eclipse-mosquitto:2.0
+    container_name: cosva-mosquitto-dev
+    restart: unless-stopped
+    ports:
+      - "${MQTT_PORT:-1884}:1883"    # MQTT port
+      - "${MQTT_WS_PORT:-9002}:9001"    # WebSocket port
+    volumes:
+      - ./broker/mosquitto/config:/mosquitto/config
+      - ./broker/mosquitto/data:/mosquitto/data
+      - ./broker/mosquitto/log:/mosquitto/log
+    networks:
+      - cosva-iot-network
+    environment:
+      - MOSQUITTO_USERNAME=${MQTT_USERNAME:-admin}
+      - MOSQUITTO_PASSWORD=${MQTT_PASSWORD:-cosva123}
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: cosva-postgres-dev
+    restart: unless-stopped
+    ports:
+      - "${DB_PORT:-5433}:5432"
+    environment:
+      POSTGRES_DB: ${DB_NAME:-cosva_iot}
+      POSTGRES_USER: ${DB_USERNAME:-cosva_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-cosva_password}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+    networks:
+      - cosva-iot-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cosva_user -d cosva_iot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis for caching and session management
+  redis:
+    image: redis:7-alpine
+    container_name: cosva-redis-dev
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6381}:6379"
+    volumes:
+      - redis_data_dev:/data
+    networks:
+      - cosva-iot-network
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-cosva_redis_password}
+
+  # Nginx reverse proxy
+  nginx:
+    image: nginx:alpine
+    container_name: cosva-nginx
+    restart: unless-stopped
+    ports:
+      - "${NGINX_HTTP_PORT:-80}:80"
+      - "${NGINX_HTTPS_PORT:-443}:443"
+    volumes:
+      - ./broker/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./broker/nginx/ssl:/etc/nginx/ssl
+    networks:
+      - cosva-iot-network
+    depends_on:
+      - mosquitto
+      - postgres
+      - redis
+
+  # Database Initialization Service
+  init-db:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.init-db
+    container_name: cosva-init-db
+    profiles:
+      - prod
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=${DB_NAME}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+    networks:
+      - cosva-iot-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # ===========================================
+  # APPLICATION SERVICES (Production Profile)
+  # ===========================================
+
+  # Sensor Service
+  sensor-service:
+    build:
+      context: .
+      dockerfile: ./services/sensor/Dockerfile
+    container_name: cosva-sensor-service
+    restart: unless-stopped
+    profiles:
+      - prod
+    environment:
+      <<: *common-env
+      PRESENCE_TIMEOUT: ${PRESENCE_TIMEOUT:-30}
+      DEBOUNCE_SECONDS: ${DEBOUNCE_SECONDS:-2}
+    volumes: 
+      - *config-volume
+      - /dev:/dev
+      # - /dev:/dev:ro  # For serial port access (commented for development)
+    networks:
+      - cosva-iot-network
+    depends_on:
+      - mosquitto
+      - postgres
+      - init-db
+    # devices:
+    #   - /dev/ttyUSB0:/dev/ttyUSB0
+    #   - /dev/ttyUSB1:/dev/ttyUSB1
+    #   - /dev/ttyUSB2:/dev/ttyUSB2
+
+  # Sync Service
+  sync-service:
+    build:
+      context: .
+      dockerfile: ./services/sync/Dockerfile
+    container_name: cosva-sync-service
+    restart: unless-stopped
+    profiles:
+      - prod
+    environment:
+      <<: *common-env
+      API_BASE_URL: ${API_BASE_URL:-https://api.cosva.com}
+      API_KEY: ${API_KEY:-your-api-key-here}
+      API_TIMEOUT: ${API_TIMEOUT:-30000}
+      API_RETRY_ATTEMPTS: ${API_RETRY_ATTEMPTS:-3}
+    volumes:
+      - *config-volume
+    networks:
+      - cosva-iot-network
+    depends_on:
+      - mosquitto
+      - postgres
+      - init-db
+
+  # Dashboard Service
+  dashboard-service:
+    build:
+      context: .
+      dockerfile: ./services/dashboard/Dockerfile
+    container_name: cosva-dashboard-service
+    restart: unless-stopped
+    profiles:
+      - prod
+    ports:
+      - "${DASHBOARD_SERVICE_PORT:-3000}:3000"
+    environment:
+      <<: *common-env
+      CORS_ORIGIN: ${CORS_ORIGIN:-*}
+      JWT_SECRET: ${JWT_SECRET:-your-jwt-secret-here}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:-your-encryption-key-here}
+    volumes:
+      - *config-volume
+    networks:
+      - cosva-iot-network
+    depends_on:
+      - mosquitto
+      - postgres
+      - init-db
+
+volumes:
+  postgres_data_dev:
+    driver: local
+  redis_data_dev:
+    driver: local
+
+networks:
+  cosva-iot-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.26.0.0/16

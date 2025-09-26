@@ -1,0 +1,26 @@
+# Mosquitto ACL (Access Control List) for Cosva IoT
+
+# Admin user has full access
+user admin
+topic readwrite #
+
+# Sensor service can publish detections and presence
+user sensor_service
+topic write sensors/rfid/+/detections
+topic write sensors/rfid/+/presence
+topic read sensors/rfid/+/detections
+topic read sensors/rfid/+/presence
+
+# Sync service can read all sensor data
+user sync_service
+topic read sensors/rfid/+/detections
+topic read sensors/rfid/+/presence
+
+# Dashboard service can read all sensor data
+user dashboard_service
+topic read sensors/rfid/+/detections
+topic read sensors/rfid/+/presence
+
+# Anonymous users (if enabled) have no access
+user anonymous
+topic read #

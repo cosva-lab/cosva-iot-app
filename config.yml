@@ -1,0 +1,83 @@
+# Cosva IoT Smart Farm Configuration
+# This file contains the static configuration for the farm
+# Dynamic configuration (MQTT, Database, API) is handled via environment variables
+
+farm:
+  id: 'farm-001'
+  name: 'Main Dairy Farm'
+
+# Stalls configuration
+stalls:
+  - id: 'stall-001'
+    number: 1
+    sensor_id: 'RFID01'
+    status: 'available'
+
+  - id: 'stall-002'
+    number: 2
+    sensor_id: 'RFID02'
+    status: 'available'
+
+  - id: 'stall-003'
+    number: 3
+    sensor_id: 'RFID03'
+    status: 'available'
+
+  - id: 'stall-004'
+    number: 4
+    sensor_id: 'RFID04'
+    status: 'available'
+
+  - id: 'stall-005'
+    number: 5
+    sensor_id: 'RFID05'
+    status: 'available'
+
+  - id: 'stall-006'
+    number: 6
+    sensor_id: 'RFID06'
+    status: 'available'
+
+# Sensor configuration
+sensors:
+  - sensor_id: 'RFID01'
+    stall_number: 1
+    protocol: 'serial'
+    port: '/dev/ttyUSB0'
+    baud_rate: 9600
+    timeout: 2
+
+  - sensor_id: 'RFID02'
+    stall_number: 2
+    protocol: 'serial'
+    port: '/dev/ttyUSB1'
+    baud_rate: 9600
+    timeout: 2
+
+  - sensor_id: 'RFID03'
+    stall_number: 3
+    protocol: 'wifi'
+    ip: '192.168.1.102'
+    port_number: 8080
+    timeout: 2
+
+  - sensor_id: 'RFID04'
+    stall_number: 4
+    protocol: 'wifi'
+    ip: '192.168.1.103'
+    port_number: 8080
+    timeout: 2
+
+  - sensor_id: 'RFID05'
+    stall_number: 5
+    protocol: 'serial'
+    port: '/dev/ttyUSB2'
+    baud_rate: 9600
+    timeout: 2
+
+  - sensor_id: 'RFID06'
+    stall_number: 6
+    protocol: 'serial'
+    port: '/dev/ttyUSB3'
+    baud_rate: 9600
+    timeout: 2
