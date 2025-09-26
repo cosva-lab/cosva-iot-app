@@ -87,7 +87,36 @@ DASHBOARD_SERVICE_PORT=3000
 NODE_ENV=production
 ```
 
-### 3. Instalar Dependencias
+### 3. Configurar Acceso a Paquetes Privados
+
+Este proyecto utiliza paquetes privados de la organización Cosva Lab alojados en GitHub Packages. Necesitas configurar el acceso:
+
+```bash
+cp .npmrc.example .npmrc
+```
+
+Edita el archivo `.npmrc` y reemplaza el token de ejemplo con tu token personal de GitHub:
+
+```bash
+registry=https://registry.npmjs.org
+
+# Cosva Lab organization
+@cosva-lab:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=TU_GITHUB_TOKEN_AQUI
+```
+
+#### Generar Token de GitHub
+
+1. Ve a GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)
+2. Genera un nuevo token con permisos `read:packages`
+3. Copia el token y reemplázalo en `.npmrc`
+
+**⚠️ Importante**: 
+- No compartas tu token de GitHub
+- El archivo `.npmrc` está en `.gitignore` para evitar commits accidentales
+- Cada desarrollador debe configurar su propio token
+
+### 4. Instalar Dependencias
 
 ```bash
 npm run install:all
