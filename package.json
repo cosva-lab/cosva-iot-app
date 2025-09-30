@@ -13,7 +13,7 @@
     "docker:prod:down": "docker-compose --profile prod down",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
-    "db:seed": "node scripts/seed.js",
+    "db:seed": "node scripts/seed/index.js",
     "build:shared": "./scripts/docker/build-shared-base.sh",
     "docker:clean": "./scripts/clean-docker.sh",
     "clean": "rm -rf node_modules && rm -rf */node_modules && rm -rf */*/node_modules",
