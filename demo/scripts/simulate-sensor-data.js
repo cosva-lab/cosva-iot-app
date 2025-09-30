@@ -1,12 +1,13 @@
 #!/usr/bin/env node
+// @ts-check
 
 /**
  * Simulador de datos de sensores RFID para Cosva IoT
  * Este script simula detecciones de sensores y publica eventos MQTT
  */
 
-const { ConfigLoader } = require('@cosva-lab/iot-shared');
-const { DatabaseService } = require('@cosva-lab/iot-db');
+const { ConfigLoader, Logger, LogLevel } = require('@cosva-lab/iot-shared');
+const { DatabaseService, StallService } = require('@cosva-lab/iot-db');
 
 const mqtt = require('mqtt');
 
@@ -34,7 +35,7 @@ async function loadCowsFromDatabase() {
   let cows = [];
   try {
     console.log('🔄 Conectando a la base de datos...');
-    databaseService = DatabaseService.getInstance(appConfig);
+    databaseService = DatabaseService.getInstance(appConfig.database);
     await databaseService.connect();
 
     console.log('📊 Cargando vacas desde la base de datos...');
@@ -101,6 +102,15 @@ const client = mqtt.connect(mqttConfig.broker_url, {
 client.on('connect', async () => {
   console.log('🔌 Conectado al broker MQTT');
   const cows = await loadCowsFromDatabase();
+  await new StallService(
+    {
+      database: appConfig.database,
+      farmId: appConfig.farm.id,
+      stalls: appConfig.stalls,
+    },
+    databaseService,
+    new Logger('simulate-sensor-data', LogLevel.INFO)
+  ).initialize();
   startSimulation(cows);
 });
 
@@ -158,7 +168,7 @@ function simulateDetection(cow) {
       console.log(`🚪 Entrada: ${cow.name} entró al puesto ${cow.stall}`);
     } else {
       // Actualizar duración de presencia
-      const duration = Math.floor((now - state.lastDetection) / 1000);
+      const duration = Math.floor((+now - state.lastDetection) / 1000);
 
       const presence = {
         id: `pres-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
@@ -184,7 +194,7 @@ function simulateDetection(cow) {
         cow_id: cow.id,
         status: 'LEFT',
         timestamp: now.toISOString(),
-        duration: Math.floor((now - state.lastDetection) / 1000),
+        duration: Math.floor((+now - state.lastDetection) / 1000),
       };
 
       const presenceTopic = `sensors/rfid/${cow.sensor}/presence`;

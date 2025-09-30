@@ -92,11 +92,8 @@ show_containers() {
 # Función para limpiar datos demo
 clean_demo_data() {
     echo "🧹 Limpiando datos demo..."
-    docker exec -i cosva-postgres-dev psql -U cosva_user -d cosva_iot -c "
-        DELETE FROM presences;
-        DELETE FROM detections;
-        DELETE FROM cows;
-    "
+    node demo/scripts/demoData/clear.js
+    echo ""
     echo "✅ Datos demo eliminados"
     echo "ℹ️  NOTA: Los puestos se definen en config.yml, no se eliminan de la base de datos"
     echo ""
@@ -105,7 +102,7 @@ clean_demo_data() {
 # Función para cargar datos demo
 load_demo_data() {
     echo "📊 Cargando datos demo..."
-    docker exec -i cosva-postgres-dev psql -U cosva_user -d cosva_iot < demo/data/demo-data.sql
+    node demo/scripts/demoData/load.js
     echo "✅ Datos demo cargados"
     echo ""
 }
