@@ -7,10 +7,9 @@
   ],
   "scripts": {
     "start": "turbo run start --parallel --filter=@cosva-lab/sensor-service --filter=@cosva-lab/sync-service --filter=@cosva-lab/dashboard-service",
+    "predocker:up": "npm run build:shared",
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",
-    "docker:prod": "docker-compose --profile prod up -d",
-    "docker:prod:down": "docker-compose --profile prod down",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:seed": "node scripts/seed/index.js",

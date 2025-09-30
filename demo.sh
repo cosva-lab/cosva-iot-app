@@ -21,29 +21,6 @@ show_menu() {
     echo ""
 }
 
-# Función para verificar si los servicios están corriendo
-check_services() {
-    echo "🔍 Verificando servicios..."
-    if docker ps | grep -q "cosva-dashboard-service"; then
-        echo "✅ Dashboard service: Corriendo"
-    else
-        echo "❌ Dashboard service: No está corriendo"
-    fi
-    
-    if docker ps | grep -q "cosva-postgres-dev"; then
-        echo "✅ PostgreSQL: Corriendo"
-    else
-        echo "❌ PostgreSQL: No está corriendo"
-    fi
-    
-    if docker ps | grep -q "cosva-mosquitto-dev"; then
-        echo "✅ MQTT Broker: Corriendo"
-    else
-        echo "❌ MQTT Broker: No está corriendo"
-    fi
-    echo ""
-}
-
 # Función para mostrar estado del sistema
 show_system_status() {
     echo "📊 Estado del Sistema:"
@@ -92,7 +69,7 @@ show_containers() {
 # Función para limpiar datos demo
 clean_demo_data() {
     echo "🧹 Limpiando datos demo..."
-    node demo/scripts/demoData/clear.js
+    node demo/data/clear.js
     echo ""
     echo "✅ Datos demo eliminados"
     echo "ℹ️  NOTA: Los puestos se definen en config.yml, no se eliminan de la base de datos"
@@ -102,7 +79,7 @@ clean_demo_data() {
 # Función para cargar datos demo
 load_demo_data() {
     echo "📊 Cargando datos demo..."
-    node demo/scripts/demoData/load.js
+    node demo/data/load.js
     echo "✅ Datos demo cargados"
     echo ""
 }

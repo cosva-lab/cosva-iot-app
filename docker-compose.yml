@@ -19,7 +19,7 @@ services:
   # MQTT Broker (Eclipse Mosquitto)
   mosquitto:
     image: eclipse-mosquitto:2.0
-    container_name: cosva-mosquitto-dev
+    container_name: cosva-mosquitto
     restart: unless-stopped
     ports:
       - "${MQTT_PORT:-1884}:1883"    # MQTT port
@@ -37,7 +37,7 @@ services:
   # PostgreSQL Database
   postgres:
     image: postgres:15-alpine
-    container_name: cosva-postgres-dev
+    container_name: cosva-postgres
     restart: unless-stopped
     ports:
       - "${DB_PORT:-5433}:5432"
@@ -59,7 +59,7 @@ services:
   # Redis for caching and session management
   redis:
     image: redis:7-alpine
-    container_name: cosva-redis-dev
+    container_name: cosva-redis
     restart: unless-stopped
     ports:
       - "${REDIS_PORT:-6381}:6379"
@@ -93,8 +93,6 @@ services:
       context: .
       dockerfile: ./Dockerfile.init-db
     container_name: cosva-init-db
-    profiles:
-      - prod
     environment:
       - DB_HOST=postgres
       - DB_PORT=5432
@@ -118,8 +116,6 @@ services:
       dockerfile: ./services/sensor/Dockerfile
     container_name: cosva-sensor-service
     restart: unless-stopped
-    profiles:
-      - prod
     environment:
       <<: *common-env
       PRESENCE_TIMEOUT: ${PRESENCE_TIMEOUT:-30}
@@ -146,8 +142,6 @@ services:
       dockerfile: ./services/sync/Dockerfile
     container_name: cosva-sync-service
     restart: unless-stopped
-    profiles:
-      - prod
     environment:
       <<: *common-env
       API_BASE_URL: ${API_BASE_URL:-https://api.cosva.com}
@@ -170,8 +164,6 @@ services:
       dockerfile: ./services/dashboard/Dockerfile
     container_name: cosva-dashboard-service
     restart: unless-stopped
-    profiles:
-      - prod
     ports:
       - "${DASHBOARD_SERVICE_PORT:-3000}:3000"
     environment:

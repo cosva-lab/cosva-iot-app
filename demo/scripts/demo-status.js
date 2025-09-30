@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-
+// @ts-check
 /**
  * Script para mostrar el estado actual del sistema Cosva IoT
  */
@@ -12,12 +12,12 @@ const appConfig = configLoader.loadConfig();
 
 async function showSystemStatus() {
   /**
-   * @type {import('@prisma/client').PrismaClient}
+   * @type {import('@prisma/client').PrismaClient | null}
    */
-  let client;
+  let client = null;
   try {
     console.log('🔄 Conectando a la base de datos...');
-    client = DatabaseClient.getInstance(appConfig).getPrismaClient();
+    client = DatabaseClient.getInstance(appConfig.database).getPrismaClient();
     await client.$connect();
 
     console.log('🐄 Cosva IoT Smart Farm - Estado del Sistema');
@@ -133,20 +133,26 @@ async function showSystemStatus() {
         const sensorToken = detection.sensorToken || 'N/A';
 
         const time = new Date(detection.timestamp).toLocaleTimeString();
-        
+
         // Manejar payload que puede ser string JSON u objeto
         let payload = {};
         try {
           if (typeof detection.payload === 'string') {
             payload = JSON.parse(detection.payload);
-          } else if (typeof detection.payload === 'object' && detection.payload !== null) {
+          } else if (
+            typeof detection.payload === 'object' &&
+            detection.payload !== null
+          ) {
             payload = detection.payload;
           }
         } catch (error) {
-          console.warn(`⚠️ Error parsing payload para detección ${detection.id}:`, error.message);
+          console.warn(
+            `⚠️ Error parsing payload para detección ${detection.id}:`,
+            error.message
+          );
           payload = {};
         }
-        
+
         const rssi = payload.rssi || 'N/A';
         console.log(
           `  • ${time} - ${cowName} (${tagNumber}) en ${sensorToken} (${rssi} dBm)`
