@@ -4,12 +4,13 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node src/index.js"
+    "start": "node src/index.js",
+    "update": "npm install @cosva-lab/iot-sync@latest"
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@cosva-lab/iot-sync": "^1.0.4"
+    "@cosva-lab/iot-sync": "^1.0.5"
   }
 }

@@ -7,6 +7,7 @@
   ],
   "scripts": {
     "start": "turbo run start --parallel --filter=@cosva-lab/sensor-service --filter=@cosva-lab/sync-service --filter=@cosva-lab/dashboard-service",
+    "update": "turbo run update",
     "predocker:up": "npm run build:shared",
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",
@@ -19,8 +20,8 @@
     "install:all": "npm install && npm install --workspaces"
   },
   "dependencies": {
-    "@cosva-lab/iot-db": "^1.0.1",
-    "@cosva-lab/iot-shared": "^1.0.3",
+    "@cosva-lab/iot-db": "^1.0.4",
+    "@cosva-lab/iot-shared": "^1.0.5",
     "@prisma/client": "^6.16.2",
     "prisma": "^6.16.2"
   },

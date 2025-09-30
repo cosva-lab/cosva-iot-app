@@ -4,13 +4,14 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node src/index.js"
+    "start": "node src/index.js",
+    "update": "npm install @cosva-lab/iot-dashboard@latest"
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@cosva-lab/iot-dashboard": "^1.0.0",
+    "@cosva-lab/iot-dashboard": "^1.0.2",
     "@prisma/client": "^6.16.2"
   }
 }
