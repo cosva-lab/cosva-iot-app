@@ -8,7 +8,7 @@ const prisma = DatabaseClient.getInstance(appConfig.database).getPrismaClient();
 const farmToken = appConfig.farm.id;
 
 function demoCows() {
-  return [
+  const cows = [
     prisma.cow.upsert({
       where: { id: demoCowsIds[0] },
       update: {},
@@ -88,6 +88,8 @@ function demoCows() {
       },
     }),
   ];
+
+  return Promise.all(cows);
 }
 
 const run = async () => {
