@@ -313,16 +313,16 @@ Los logs se almacenan en:
 
 ```bash
 # Ver logs de todos los servicios
-docker-compose logs -f
+docker compose logs -f
 
 # Ver logs de un servicio específico
-docker-compose logs -f sensor-service
+docker compose logs -f sensor-service
 
 # Ver estado de contenedores
-docker-compose ps
+docker compose ps
 
 # Reiniciar un servicio
-docker-compose restart sensor-service
+docker compose restart sensor-service
 ```
 
 ## 🛠️ Desarrollo
@@ -340,7 +340,7 @@ cosva-iot-app/
 │   └── nginx/              # Nginx config
 ├── scripts/                # Scripts de utilidad
 ├── config.yml             # Configuración de granja
-├── docker-compose.yml     # Orquestación Docker
+├── docker compose.yml     # Orquestación Docker
 └── package.json           # Configuración raíz
 ```
 
@@ -394,7 +394,7 @@ sensors:
 
 3. **Reiniciar el servicio de sensores**:
 ```bash
-docker-compose restart sensor-service
+docker compose restart sensor-service
 ```
 
 #### Acceso a Puertos Serie en Docker
@@ -402,7 +402,7 @@ docker-compose restart sensor-service
 Para sensores serial, asegúrate de que el contenedor tenga acceso a los dispositivos USB:
 
 ```yaml
-# En docker-compose.yml
+# En docker compose.yml
 sensor-service:
   devices:
     - /dev/ttyUSB0:/dev/ttyUSB0
@@ -436,16 +436,16 @@ cd services/dashboard && npm start
 ### Base de Datos no Conecta
 ```bash
 # Verificar estado de PostgreSQL
-docker-compose logs postgres
+docker compose logs postgres
 
 # Reiniciar base de datos
-docker-compose restart postgres
+docker compose restart postgres
 ```
 
 ### MQTT Broker no Responde
 ```bash
 # Verificar configuración Mosquitto
-docker-compose logs mosquitto
+docker compose logs mosquitto
 
 # Verificar puertos
 netstat -an | grep 1884
@@ -454,10 +454,10 @@ netstat -an | grep 1884
 ### Servicio no Inicia
 ```bash
 # Verificar logs del servicio
-docker-compose logs <service-name>
+docker compose logs <service-name>
 
 # Verificar variables de entorno
-docker-compose config
+docker compose config
 ```
 
 ### Limpiar Sistema Completo

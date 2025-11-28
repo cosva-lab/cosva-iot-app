@@ -1,7 +1,7 @@
 # Cosva IoT Docker Compose
 # Supports both development and production modes
-# Use: docker-compose up -d (development - infrastructure only)
-# Use: docker-compose --profile prod up -d (production - all services)
+# Use: docker compose up -d (development - infrastructure only)
+# Use: docker compose --profile prod up -d (production - all services)
 
 x-common-env: &common-env
   CONFIG_FILE: ${CONFIG_FILE:-config.yml}
