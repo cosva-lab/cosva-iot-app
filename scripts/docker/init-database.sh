@@ -1,33 +1,29 @@
 #!/bin/sh
+set -e
 
-# Database initialization script for Docker
-echo "🚀 Initializing database..."
-
+echo "Initializing Cosva IoT database..."
 
 export DATABASE_URL="postgresql://${DB_USERNAME}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?schema=public"
-echo "🔧 Built DATABASE_URL: postgresql://${DB_USERNAME}:***@${DB_HOST}:${DB_PORT}/${DB_NAME}?schema=public"
 
-# Wait for PostgreSQL to be ready
-echo "⏳ Waiting for PostgreSQL to be ready..."
-until pg_isready -h ${DB_HOST} -p ${DB_PORT} -U ${DB_USERNAME} -d ${DB_NAME}; do
+echo "Waiting for PostgreSQL..."
+until pg_isready -h "${DB_HOST}" -p "${DB_PORT}" -U "${DB_USERNAME}" -d "${DB_NAME}"; do
   echo "PostgreSQL is unavailable - sleeping"
   sleep 2
 done
 
-echo "✅ PostgreSQL is ready!"
+echo "PostgreSQL is ready"
 
-# Generate Prisma client
-echo "🔧 Generating Prisma client..."
-cd /app/shared
-npm run db:generate
+cd /app
 
-# Run database migrations
-echo "📊 Running database migrations..."
-npm run db:migrate
+echo "Generating Prisma client from @cosva-lab/iot-db..."
+npx prisma generate
 
-# Seed the database (optional)
-echo "🌱 Seeding database..."
-npm run db:seed
+echo "Applying migrations..."
+npx prisma migrate deploy
 
-echo "🎉 Database initialization complete!"
+if [ -f ./scripts/seed/index.js ]; then
+  echo "Seeding database..."
+  node ./scripts/seed/index.js || echo "Seed skipped or failed (non-fatal)"
+fi
 
+echo "Database initialization complete"

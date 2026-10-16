@@ -77,7 +77,7 @@ DB_PORT=5433
 # MQTT
 MQTT_USERNAME=cosva_service
 MQTT_PASSWORD=cosva123
-MQTT_PORT=1884
+MQTT_PORT=1883
 MQTT_WS_PORT=9002
 
 # Redis
@@ -223,7 +223,7 @@ npm run docker:prod:down
 - **Persistencia**: Volumen Docker
 
 ### 🦟 Mosquitto MQTT
-- **Puerto MQTT**: 1884 (externo) / 1883 (interno)
+- **Puerto MQTT**: 1883 (externo e interno)
 - **Puerto WebSocket**: 9002 (externo) / 9001 (interno)
 - **Autenticación**: Usuario/contraseña configurables
 - **Persistencia**: Volúmenes para config, data y logs
@@ -448,7 +448,7 @@ docker compose restart postgres
 docker compose logs mosquitto
 
 # Verificar puertos
-netstat -an | grep 1884
+netstat -an | grep 1883
 ```
 
 ### Servicio no Inicia
@@ -466,6 +466,39 @@ npm run docker:clean
 npm run clean
 npm run install:all
 ```
+
+## Raspberry Pi y MQTT 1883
+
+Los ESP32 publican en `cosva-pi.local:1883`. El compose expone ese puerto del host. Si Raspberry Pi OS ya tiene Mosquitto por systemd, Docker falla con `bind: address already in use`. Antes de `docker compose up`:
+
+```bash
+sudo systemctl disable --now mosquitto
+```
+
+`API_KEY` debe ser el JWT de `signIn` de cosva-api (`x-token`). Sin red el ordeño sigue; el botón **Sincronizar animales** es el que baja vacas, cabras y el resto.
+
+Cada puesto en `config.yml` ata `rfid_id` (el id del firmware, por ejemplo `reader-01`) y `scale_id` (`scale-01`).
+
+## Iterar sin publicar paquetes
+
+Los servicios consumen `@cosva-lab/iot-*` desde `vendor/` (copias del `dist` de `cosva-iot`). Con ambos repos como hermanos:
+
+```bash
+cd ../cosva-iot
+npm install
+npm run build
+
+cd ../cosva-iot-app
+npm run vendor:packages
+npm install
+npm start
+```
+
+`npm run docker:up` ya corre `vendor:packages` en el `predocker:up`.
+
+También puedes usar `npm link` hacia `../cosva-iot/packages/*` si prefieres no regenerar `vendor/` en cada cambio.
+
+Publica a GitHub Packages solo cuando la Pi deba tomar una versión cerrada; entonces cambia los `file:./vendor/...` por `^1.1.0` y corre `npm run update` en cada servicio.
 
 ## 📞 Soporte
 

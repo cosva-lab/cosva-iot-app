@@ -44,3 +44,6 @@ temp/
 .turbo/
 .npmrc
 config.yml
+
+# Local package vendor (from ../cosva-iot via npm run vendor:packages)
+vendor/

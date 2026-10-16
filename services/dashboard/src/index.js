@@ -10,5 +10,7 @@ run({
   mqtt: config.mqtt,
   database: config.database,
   stalls: config.stalls,
+  api: config.api,
+  milking: config.milking,
   port: 3000,
 });

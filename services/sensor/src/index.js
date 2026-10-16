@@ -10,4 +10,7 @@ run({
   mqtt: config.mqtt,
   presence: config.presence,
   sensors: config.sensors,
+  stalls: config.stalls,
+  milking: config.milking,
+  database: config.database,
 });

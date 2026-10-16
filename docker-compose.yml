@@ -22,7 +22,7 @@ services:
     container_name: cosva-mosquitto
     restart: unless-stopped
     ports:
-      - "${MQTT_PORT:-1884}:1883"    # MQTT port
+      - "${MQTT_PORT:-1883}:1883"    # MQTT port. Disable host mosquitto first on Raspberry Pi OS.
       - "${MQTT_WS_PORT:-9002}:9001"    # WebSocket port
     volumes:
       - ./broker/mosquitto/config:/mosquitto/config
@@ -171,8 +171,12 @@ services:
       CORS_ORIGIN: ${CORS_ORIGIN:-*}
       JWT_SECRET: ${JWT_SECRET:-your-jwt-secret-here}
       ENCRYPTION_KEY: ${ENCRYPTION_KEY:-your-encryption-key-here}
+      ANIMAL_IMAGES_DIR: /data/animal-images
+      API_BASE_URL: ${API_BASE_URL:-https://api.cosva.com}
+      API_KEY: ${API_KEY:-your-api-key-here}
     volumes:
       - *config-volume
+      - animal_images:/data/animal-images
     networks:
       - cosva-iot-network
     depends_on:
@@ -184,6 +188,8 @@ volumes:
   postgres_data_dev:
     driver: local
   redis_data_dev:
+    driver: local
+  animal_images:
     driver: local
 
 networks:

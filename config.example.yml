@@ -11,31 +11,43 @@ stalls:
   - id: 'stall-001'
     number: 1
     sensor_id: 'RFID01'
+    rfid_id: 'reader-01'
+    scale_id: 'scale-01'
     status: 'available'
 
   - id: 'stall-002'
     number: 2
     sensor_id: 'RFID02'
+    rfid_id: 'reader-02'
+    scale_id: 'scale-02'
     status: 'available'
 
   - id: 'stall-003'
     number: 3
     sensor_id: 'RFID03'
+    rfid_id: 'reader-03'
+    scale_id: 'scale-03'
     status: 'available'
 
   - id: 'stall-004'
     number: 4
     sensor_id: 'RFID04'
+    rfid_id: 'reader-04'
+    scale_id: 'scale-04'
     status: 'available'
 
   - id: 'stall-005'
     number: 5
     sensor_id: 'RFID05'
+    rfid_id: 'reader-05'
+    scale_id: 'scale-05'
     status: 'available'
 
   - id: 'stall-006'
     number: 6
     sensor_id: 'RFID06'
+    rfid_id: 'reader-06'
+    scale_id: 'scale-06'
     status: 'available'
 
 # Sensor configuration
@@ -81,3 +93,15 @@ sensors:
     port: '/dev/ttyUSB3'
     baud_rate: 9600
     timeout: 2
+
+milking:
+  noise_kg: 0.05
+  container_drop_kg: 0.5
+  container_stable_seconds: 4
+  tare_min_kg: 1.0
+  tare_max_kg: 9.0
+  empty_platform_kg: 0.5
+  occupancy_grace_seconds: 40
+  min_milk_kg: 0.05
+  milk_density_kg_per_liter: 1.03
+  treatment_lookback_days: 7

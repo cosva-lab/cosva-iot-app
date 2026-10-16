@@ -9,7 +9,7 @@ const farmToken = appConfig.farm.id;
 
 function demoCows() {
   const cows = [
-    prisma.cow.upsert({
+    prisma.animal.upsert({
       where: { id: demoCowsIds[0] },
       update: {},
       create: {
@@ -22,7 +22,7 @@ function demoCows() {
         status: 'active',
       },
     }),
-    prisma.cow.upsert({
+    prisma.animal.upsert({
       where: { id: demoCowsIds[1] },
       update: {},
       create: {
@@ -35,7 +35,7 @@ function demoCows() {
         status: 'active',
       },
     }),
-    prisma.cow.upsert({
+    prisma.animal.upsert({
       where: { id: demoCowsIds[2] },
       update: {},
       create: {
@@ -48,7 +48,7 @@ function demoCows() {
         status: 'active',
       },
     }),
-    prisma.cow.upsert({
+    prisma.animal.upsert({
       where: { id: demoCowsIds[3] },
       update: {},
       create: {
@@ -61,7 +61,7 @@ function demoCows() {
         status: 'active',
       },
     }),
-    prisma.cow.upsert({
+    prisma.animal.upsert({
       where: { id: demoCowsIds[4] },
       update: {},
       create: {
@@ -74,7 +74,7 @@ function demoCows() {
         status: 'active',
       },
     }),
-    prisma.cow.upsert({
+    prisma.animal.upsert({
       where: { id: demoCowsIds[5] },
       update: {},
       create: {

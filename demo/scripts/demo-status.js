@@ -25,7 +25,7 @@ async function showSystemStatus() {
 
     // Mostrar vacas
     console.log('📋 VACAS REGISTRADAS:');
-    const cows = await client.cow.findMany({
+    const cows = await client.animal.findMany({
       where: {
         farmToken: appConfig.farm.id,
       },

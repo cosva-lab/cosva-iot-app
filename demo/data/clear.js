@@ -9,7 +9,7 @@ const prisma = DatabaseClient.getInstance(appConfig.database).getPrismaClient();
 const run = async () => {
   try {
     await prisma.$connect();
-    await prisma.cow.deleteMany({
+    await prisma.animal.deleteMany({
       where: { id: { in: demoCowsIds } },
     });
   } catch (error) {

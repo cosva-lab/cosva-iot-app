@@ -4,22 +4,36 @@
 user admin
 topic readwrite #
 
-# Sensor service can publish detections and presence
+# Firmware devices (ESP32) publish scale + RFID under cosva/
+user cosva
+topic write cosva/#
+topic read cosva/#
+
+# Sensor service: firmware topics, milking engine, legacy RFID JSON
 user sensor_service
+topic readwrite cosva/#
+topic readwrite milking/#
 topic write sensors/rfid/+/detections
 topic write sensors/rfid/+/presence
 topic read sensors/rfid/+/detections
 topic read sensors/rfid/+/presence
 
-# Sync service can read all sensor data
+# Sync service
 user sync_service
 topic read sensors/rfid/+/detections
 topic read sensors/rfid/+/presence
+topic read milking/#
 
-# Dashboard service can read all sensor data
+# Dashboard service
 user dashboard_service
 topic read sensors/rfid/+/detections
 topic read sensors/rfid/+/presence
+topic readwrite milking/#
+topic read cosva/#
+
+# Compose default service user
+user cosva_service
+topic readwrite #
 
 # Anonymous users (if enabled) have no access
 user anonymous
