@@ -11,6 +11,8 @@ WORKDIR /app
 COPY package*.json ./
 COPY .npmrc ./
 COPY prisma.config.ts ./
+# Local @cosva-lab packages (file:./vendor/...) — must be present before npm i
+COPY vendor/ ./vendor/
 
 # Install all dependencies
 RUN npm i

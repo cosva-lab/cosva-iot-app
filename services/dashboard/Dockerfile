@@ -3,7 +3,8 @@ FROM cosva-shared-base:latest
 
 WORKDIR /app
 
-# Copy source code
+# Copy source code + vendored packages (file: deps)
+COPY vendor/ ./vendor/
 COPY services/dashboard/ ./services/dashboard/
 
 # Install dependencies

@@ -9,7 +9,8 @@ RUN apk add --no-cache \
 
 WORKDIR /app
 
-# Copy source code
+# Copy source code + vendored packages (file: deps)
+COPY vendor/ ./vendor/
 COPY services/sensor/ ./services/sensor/
 
 # Install dependencies
