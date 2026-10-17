@@ -16,7 +16,7 @@ COPY services/sensor/ ./services/sensor/
 # Install dependencies
 WORKDIR /app
 
-RUN npm i
+RUN npm i && npx prisma generate
 
 WORKDIR /app/services/sensor
 

@@ -18,7 +18,12 @@
     "build:shared": "./scripts/docker/build-shared-base.sh",
     "docker:clean": "./scripts/clean-docker.sh",
     "clean": "rm -rf node_modules && rm -rf */node_modules && rm -rf */*/node_modules",
-    "install:all": "npm install && npm install --workspaces"
+    "install:all": "npm install && npm install --workspaces",
+    "dev:reload:dashboard": "./scripts/dev/reload-dashboard.sh",
+    "dev:reload:services": "./scripts/dev/reload-services.sh",
+    "dev:up": "docker compose up -d",
+    "dev:logs": "docker compose logs -f dashboard-service sensor-service sync-service",
+    "dev:ps": "docker compose ps"
   },
   "dependencies": {
     "@cosva-lab/iot-db": "file:./vendor/@cosva-lab/iot-db",

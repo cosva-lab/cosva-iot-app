@@ -1,25 +1,40 @@
 # COSVA IoT Smart Farm System
 
-Un sistema IoT completo para granjas lecheras inteligentes con arquitectura de microservicios, basado en Node.js y tecnologías containerizadas.
+A complete IoT system for smart dairy farms, built as a Node.js microservices architecture and deployed with containers.
 
-## 🚀 Características Principales
+## Local development
 
-- **Arquitectura de Microservicios**: Servicios modulares para sensores, sincronización y dashboard
-- **Comunicación MQTT**: Broker Mosquitto para comunicación en tiempo real
-- **Base de Datos Relacional**: PostgreSQL con Prisma ORM
-- **Caché Redis**: Para manejo de sesiones y optimización de rendimiento
-- **Proxy Nginx**: Balanceador de carga y proxy reverso
-- **Contenedorización**: Docker y Docker Compose para despliegue
-- **Monorepo**: Gestión centralizada con Turbo y npm workspaces
+This repo runs the farm stack (Docker, `config.yml`, `.env`). Package source lives in **cosva-iot**; build there, then vendor here.
 
-## 📋 Requisitos del Sistema
+```bash
+npm run docker:up
+npm run db:migrate
+
+# After building packages in the cosva-iot repo:
+npm run vendor:packages
+npm run dev:reload:dashboard   # dashboard only
+npm run dev:reload:services    # db + sensor + sync + dashboard
+```
+
+
+## 🚀 Main features
+
+- **Microservices architecture**: Modular services for sensors, sync, and the dashboard
+- **MQTT communication**: Mosquitto broker for real-time messaging
+- **Relational database**: PostgreSQL with Prisma ORM
+- **Redis cache**: Session handling and performance
+- **Nginx proxy**: Load balancer and reverse proxy
+- **Containers**: Docker and Docker Compose for deployment
+- **Monorepo**: Centralized management with Turbo and npm workspaces
+
+## 📋 System requirements
 
 - **Node.js**: >= 18.0.0
 - **Docker**: >= 20.10
 - **Docker Compose**: >= 2.0
 - **npm**: >= 10.9.2
 
-## 🏗️ Arquitectura del Sistema
+## 🏗️ System architecture
 
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
@@ -44,31 +59,31 @@ Un sistema IoT completo para granjas lecheras inteligentes con arquitectura de m
     └─────────────────┘ └─────────────────┘ └─────────────────┘
 ```
 
-## 🚀 Inicio Rápido
+## 🚀 Quick start
 
-### 1. Clonar el Repositorio
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/cosva-lab/cosva-iot-app.git
 cd cosva-iot-app
 ```
 
-### 2. Configurar Archivos de Configuración
+### 2. Configure the files
 
-#### Variables de Entorno
+#### Environment variables
 ```bash
 cp env.example .env
 ```
 
-#### Configuración de Granja y Sensores
+#### Farm and sensor configuration
 ```bash
 cp config.example.yml config.yml
 ```
 
-**Edita el archivo `.env`** con tus configuraciones específicas:
+**Edit `.env`** with your settings:
 
 ```env
-# Base de Datos
+# Database
 DB_NAME=cosva_iot
 DB_USERNAME=cosva_user
 DB_PASSWORD=cosva_password
@@ -84,172 +99,176 @@ MQTT_WS_PORT=9002
 REDIS_PASSWORD=cosva_redis_password
 REDIS_PORT=6381
 
-# API Externa
+# External API
 API_BASE_URL=https://api.cosva.com
 API_KEY=your-api-key-here
 
-# Servicios
+# Services
 DASHBOARD_SERVICE_PORT=3000
 NODE_ENV=production
 ```
 
-**Personaliza el archivo `config.yml`** según tu granja:
+**Customize `config.yml`** for your farm:
 
-- **ID y nombre de granja**: Actualiza `farm.id` y `farm.name`
-- **Establos**: Configura la cantidad de establos necesarios
-- **Sensores**: Define los sensores RFID (serial o WiFi) para cada establo
-- **Puertos serie**: Ajusta `/dev/ttyUSB*` según tu hardware
-- **IPs WiFi**: Configura las direcciones IP de sensores inalámbricos
+- **Farm id and name**: Update `farm.id` and `farm.name`
+- **Stalls**: Set the number of stalls you need
+- **Sensors**: Define the RFID sensors (serial or WiFi) for each stall
+- **Serial ports**: Adjust `/dev/ttyUSB*` to match your hardware
+- **WiFi IPs**: Set the IP addresses of wireless sensors
 
-### 3. Configurar Acceso a Paquetes Privados
+### 3. Configure access to private packages
 
-Este proyecto utiliza paquetes privados de la organización Cosva Lab alojados en GitHub Packages. Necesitas configurar el acceso:
+This project uses private Cosva Lab packages hosted on GitHub Packages. Configure access:
 
 ```bash
 cp .npmrc.example .npmrc
 ```
 
-Edita el archivo `.npmrc` y reemplaza el token de ejemplo con tu token personal de GitHub:
+Edit `.npmrc` and replace the example token with your personal GitHub token:
 
 ```bash
 registry=https://registry.npmjs.org
 
 # Cosva Lab organization
 @cosva-lab:registry=https://npm.pkg.github.com
-//npm.pkg.github.com/:_authToken=TU_GITHUB_TOKEN_AQUI
+//npm.pkg.github.com/:_authToken=YOUR_GITHUB_TOKEN_HERE
 ```
 
-#### Generar Token de GitHub
+#### Create a GitHub token
 
-1. Ve a GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)
-2. Genera un nuevo token con permisos `read:packages`
-3. Copia el token y reemplázalo en `.npmrc`
+1. Go to GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)
+2. Generate a new token with the `read:packages` scope
+3. Copy the token and paste it into `.npmrc`
 
-**⚠️ Importante**: 
-- No compartas tu token de GitHub
-- El archivo `.npmrc` está en `.gitignore` para evitar commits accidentales
-- Cada desarrollador debe configurar su propio token
+**⚠️ Important**:
+- Do not share your GitHub token
+- `.npmrc` is in `.gitignore` so it is not committed by accident
+- Each developer configures their own token
 
-### 4. Instalar Dependencias
+### 4. Install dependencies
 
 ```bash
 npm run install:all
 ```
 
-### 4. Generar Cliente Prisma
+### 5. Generate the Prisma client
 
 ```bash
 npm run db:generate
 ```
 
-## 🐳 Despliegue con Docker
+## 🐳 Docker deployment
 
-### Modo Desarrollo (Solo Infraestructura)
+### Development mode (infrastructure only)
 
-Para desarrollo local, ejecuta solo la infraestructura (base de datos, MQTT, Redis, Nginx):
+For local development, start only the infrastructure (database, MQTT, Redis, Nginx):
 
 ```bash
 npm run docker:up
 ```
 
-Los servicios de aplicación se ejecutan localmente:
+Application services run locally:
 
 ```bash
 npm start
 ```
 
-### Modo Producción (Sistema Completo)
+### Production mode (full system)
 
-Para desplegar el sistema completo en producción:
+To deploy the full system in production:
 
 ```bash
 npm run docker:prod
 ```
 
-Para detener:
+To stop it:
 
 ```bash
 npm run docker:prod:down
 ```
 
-## 🔧 Scripts Disponibles
+## 🔧 Available scripts
 
-### Desarrollo
-- `npm start` - Ejecuta todos los servicios en paralelo
-- `npm run docker:up` - Levanta infraestructura en Docker
-- `npm run docker:down` - Detiene infraestructura
+### Development
+- `npm run dev:reload:dashboard` — Build + vendor + recreate dashboard
+- `npm run dev:reload:services` — Rebuild packages + migrate + recreate app services
+- `npm start` — Run app services locally (without Docker app containers)
+- `npm run docker:up` / `dev:up` — Start Docker stack
+- `npm run docker:down` — Stop stack
+- `npm run dev:logs` / `dev:ps` — Logs and container status
 
-### Producción
-- `npm run docker:prod` - Despliega sistema completo
-- `npm run docker:prod:down` - Detiene sistema completo
 
-### Base de Datos
-- `npm run db:generate` - Genera cliente Prisma
-- `npm run db:migrate` - Ejecuta migraciones
-- `npm run db:seed` - Siembra datos de prueba
+### Production
+- `npm run docker:prod` - Deploy the full system
+- `npm run docker:prod:down` - Stop the full system
 
-### Utilidades
-- `npm run build:shared` - Construye imagen base compartida
-- `npm run docker:clean` - Limpia contenedores y volúmenes
-- `npm run clean` - Limpia node_modules
-- `npm run install:all` - Instala todas las dependencias
+### Database
+- `npm run db:generate` - Generate the Prisma client
+- `npm run db:migrate` - Run migrations
+- `npm run db:seed` - Seed test data
 
-## 📊 Servicios
+### Utilities
+- `npm run build:shared` - Build the shared base image
+- `npm run docker:clean` - Remove containers and volumes
+- `npm run clean` - Remove node_modules
+- `npm run install:all` - Install all dependencies
+
+## 📊 Services
 
 ### 🔬 Sensor Service
-- **Puerto**: Variable (interno)
-- **Función**: Maneja sensores RFID y detección de presencia
-- **Tecnologías**: Node.js, Serial Communication
+- **Port**: Variable (internal)
+- **Role**: RFID sensors and presence detection
+- **Stack**: Node.js, serial communication
 - **Package**: `@cosva-lab/iot-sensor`
 
-### 🔄 Sync Service  
-- **Puerto**: Variable (interno)
-- **Función**: Sincroniza datos con API externa de COSVA
-- **Tecnologías**: Node.js, HTTP API Integration
-- **Reintentos**: 3 intentos automáticos
+### 🔄 Sync Service
+- **Port**: Variable (internal)
+- **Role**: Sync data with the external COSVA API
+- **Stack**: Node.js, HTTP API integration
+- **Retries**: 3 automatic attempts
 
 ### 📈 Dashboard Service
-- **Puerto**: 3000 (configurable)
-- **Función**: Interfaz web para monitoreo y control
-- **Tecnologías**: Node.js, Web Interface
+- **Port**: 3000 (configurable)
+- **Role**: Web interface for monitoring and control
+- **Stack**: Node.js, web interface
 - **Package**: `@cosva-lab/iot-dashboard`
 
-## 🗄️ Infraestructura
+## 🗄️ Infrastructure
 
 ### 🐘 PostgreSQL
-- **Puerto**: 5433 (externo) / 5432 (interno)
-- **Base de Datos**: cosva_iot
-- **Health Check**: Configurado
-- **Persistencia**: Volumen Docker
+- **Port**: 5433 (external) / 5432 (internal)
+- **Database**: cosva_iot
+- **Health check**: Enabled
+- **Persistence**: Docker volume
 
 ### 🦟 Mosquitto MQTT
-- **Puerto MQTT**: 1883 (externo e interno)
-- **Puerto WebSocket**: 9002 (externo) / 9001 (interno)
-- **Autenticación**: Usuario/contraseña configurables
-- **Persistencia**: Volúmenes para config, data y logs
+- **MQTT port**: 1883 (external and internal)
+- **WebSocket port**: 9002 (external) / 9001 (internal)
+- **Authentication**: Configurable username and password
+- **Persistence**: Volumes for config, data, and logs
 
 ### 🟥 Redis
-- **Puerto**: 6381 (externo) / 6379 (interno)
-- **Función**: Caché y manejo de sesiones
-- **Persistencia**: AOF habilitado
+- **Port**: 6381 (external) / 6379 (internal)
+- **Role**: Cache and session handling
+- **Persistence**: AOF enabled
 
 ### 🌐 Nginx
-- **Puerto HTTP**: 80
-- **Puerto HTTPS**: 443
-- **Función**: Proxy reverso y balanceador de carga
-- **SSL**: Soporte para certificados personalizados
+- **HTTP port**: 80
+- **HTTPS port**: 443
+- **Role**: Reverse proxy and load balancer
+- **SSL**: Support for custom certificates
 
-## ⚙️ Configuración
+## ⚙️ Configuration
 
 ### config.yml
-El archivo `config.yml` contiene la configuración estática de la granja y sensores:
+`config.yml` holds the static farm and sensor configuration:
 
 ```yaml
 farm:
   id: 'farm-001'
   name: 'Main Dairy Farm'
 
-# Configuración de establos
+# Stall configuration
 stalls:
   - id: 'stall-001'
     number: 1
@@ -259,107 +278,107 @@ stalls:
     number: 2
     sensor_id: 'RFID02'
     status: 'available'
-  # ... hasta 6 establos
+  # ... up to 6 stalls
 
-# Configuración de sensores
+# Sensor configuration
 sensors:
   - sensor_id: 'RFID01'
     stall_number: 1
-    protocol: 'serial'        # serial o wifi
-    port: '/dev/ttyUSB0'      # para serial
+    protocol: 'serial'        # serial or wifi
+    port: '/dev/ttyUSB0'      # for serial
     baud_rate: 9600
     timeout: 2
     
   - sensor_id: 'RFID03'
     stall_number: 3
-    protocol: 'wifi'          # sensor WiFi
-    ip: '192.168.1.102'       # IP del sensor
+    protocol: 'wifi'          # WiFi sensor
+    ip: '192.168.1.102'       # sensor IP
     port_number: 8080
     timeout: 2
 ```
 
-#### Tipos de Sensores Soportados
+#### Supported sensor types
 
-**Sensores Serial (USB/RS485):**
-- Puerto: `/dev/ttyUSB0`, `/dev/ttyUSB1`, etc.
-- Baud Rate: 9600 (configurable)
-- Timeout: 2 segundos
+**Serial sensors (USB/RS485):**
+- Port: `/dev/ttyUSB0`, `/dev/ttyUSB1`, and so on
+- Baud rate: 9600 (configurable)
+- Timeout: 2 seconds
 
-**Sensores WiFi/Ethernet:**
-- IP: Dirección IP del sensor
-- Puerto: Puerto de comunicación (típicamente 8080)
-- Timeout: 2 segundos
+**WiFi/Ethernet sensors:**
+- IP: Sensor IP address
+- Port: Communication port (typically 8080)
+- Timeout: 2 seconds
 
-### Variables de Entorno
-Las configuraciones dinámicas se manejan via variables de entorno:
+### Environment variables
+Dynamic settings are managed through environment variables:
 
-- **BASE_URL**: URL base de la API
-- **DATABASE_URL**: Cadena de conexión PostgreSQL
-- **MQTT_***: Configuraciones del broker MQTT
-- **LOG_LEVEL**: Nivel de logging (DEBUG, INFO, WARN, ERROR)
+- **BASE_URL**: API base URL
+- **DATABASE_URL**: PostgreSQL connection string
+- **MQTT_***: MQTT broker settings
+- **LOG_LEVEL**: Logging level (DEBUG, INFO, WARN, ERROR)
 
-## 🔍 Monitoreo y Logs
+## 🔍 Monitoring and logs
 
-### Health Checks
-- PostgreSQL tiene health check automático
-- Servicios configurados con restart: unless-stopped
+### Health checks
+- PostgreSQL has an automatic health check
+- Services are configured with restart: unless-stopped
 
 ### Logs
-Los logs se almacenan en:
+Logs are stored in:
 - Mosquitto: `./broker/mosquitto/log/`
 - Docker containers: `docker logs <container-name>`
 
-### Comandos Útiles
+### Useful commands
 
 ```bash
-# Ver logs de todos los servicios
+# Logs for every service
 docker compose logs -f
 
-# Ver logs de un servicio específico
+# Logs for one service
 docker compose logs -f sensor-service
 
-# Ver estado de contenedores
+# Container status
 docker compose ps
 
-# Reiniciar un servicio
+# Restart a service
 docker compose restart sensor-service
 ```
 
-## 🛠️ Desarrollo
+## 🛠️ Development
 
-### Estructura del Proyecto
+### Project structure
 
 ```
 cosva-iot-app/
-├── services/                 # Microservicios
-│   ├── sensor/              # Servicio de sensores
-│   ├── sync/                # Servicio de sincronización
-│   └── dashboard/           # Servicio de dashboard
-├── broker/                  # Configuración de brokers
+├── services/                 # Microservices
+│   ├── sensor/              # Sensor service
+│   ├── sync/                # Sync service
+│   └── dashboard/           # Dashboard service
+├── broker/                  # Broker configuration
 │   ├── mosquitto/          # MQTT broker config
 │   └── nginx/              # Nginx config
-├── scripts/                # Scripts de utilidad
-├── config.yml             # Configuración de granja
-├── docker compose.yml     # Orquestación Docker
-└── package.json           # Configuración raíz
+├── scripts/                # Utility scripts
+├── config.yml             # Farm configuration
+├── docker compose.yml     # Docker orchestration
+└── package.json           # Root configuration
 ```
 
-### Paquetes Cosva Lab
+### Cosva Lab packages
 
-El proyecto utiliza los siguientes paquetes privados de la organización:
+The project uses these private organization packages:
 
-- **@cosva-lab/iot-sensor** (v1.0.1): Manejo de sensores RFID y detección de presencia
-- **@cosva-lab/iot-dashboard** (v1.0.0): Interfaz web y componentes del dashboard  
-- **@cosva-lab/iot-db** (v1.0.1): Modelos y esquemas de base de datos
-- **@cosva-lab/iot-shared** (v1.0.3): Utilidades y tipos compartidos
+- **@cosva-lab/iot-sensor** (v1.0.1): RFID sensors and presence detection
+- **@cosva-lab/iot-dashboard** (v1.0.0): Web interface and dashboard components
+- **@cosva-lab/iot-db** (v1.0.1): Database models and schemas
+- **@cosva-lab/iot-shared** (v1.0.3): Shared utilities and types
 
-Estos paquetes están alojados en GitHub Packages y requieren autenticación (ver configuración `.npmrc`).
+These packages are hosted on GitHub Packages and require authentication (see the `.npmrc` setup).
 
-### Configuración de Sensores
+### Sensor configuration
 
-#### Agregar Nuevos Sensores
+#### Add new sensors
 
-1. **Agregar el establo** en la sección `stalls` de `config.yml`:
+1. **Add the stall** in the `stalls` section of `config.yml`:
 ```yaml
 stalls:
   - id: 'stall-007'
@@ -368,9 +387,9 @@ stalls:
     status: 'available'
 ```
 
-2. **Configurar el sensor** en la sección `sensors`:
+2. **Configure the sensor** in the `sensors` section:
 
-**Para sensor Serial:**
+**Serial sensor:**
 ```yaml
 sensors:
   - sensor_id: 'RFID07'
@@ -381,7 +400,7 @@ sensors:
     timeout: 2
 ```
 
-**Para sensor WiFi:**
+**WiFi sensor:**
 ```yaml
 sensors:
   - sensor_id: 'RFID07'
@@ -392,125 +411,170 @@ sensors:
     timeout: 2
 ```
 
-3. **Reiniciar el servicio de sensores**:
+3. **Restart the sensor service**:
 ```bash
 docker compose restart sensor-service
 ```
 
-#### Acceso a Puertos Serie en Docker
+#### Serial port access in Docker
 
-Para sensores serial, asegúrate de que el contenedor tenga acceso a los dispositivos USB:
+For serial sensors, give the container access to the USB devices:
 
 ```yaml
-# En docker compose.yml
+# In docker compose.yml
 sensor-service:
   devices:
     - /dev/ttyUSB0:/dev/ttyUSB0
     - /dev/ttyUSB1:/dev/ttyUSB1
-    # Agregar más según necesidad
+    # Add more as needed
 ```
 
-### Desarrollo Local
+### Local development
 
-Para desarrollo, puedes ejecutar servicios individualmente:
+For development, you can run services individually:
 
 ```bash
-# Solo infraestructura
+# Infrastructure only
 npm run docker:up
 
-# En terminales separadas
+# In separate terminals
 cd services/sensor && npm start
 cd services/sync && npm start  
 cd services/dashboard && npm start
 ```
 
-## 🔒 Seguridad
+## 🔒 Security
 
-- **Autenticación MQTT**: Usuario/contraseña requeridos
-- **Red Aislada**: Todos los servicios en red Docker privada
-- **Configuración SSL**: Nginx configurado para HTTPS
-- **Variables de Entorno**: Secretos manejados via .env
+- **MQTT authentication**: Username and password required
+- **Isolated network**: All services on a private Docker network
+- **SSL configuration**: Nginx configured for HTTPS
+- **Environment variables**: Secrets managed through `.env`
 
-## 🚨 Solución de Problemas
+## 🚨 Troubleshooting
 
-### Base de Datos no Conecta
+### Database does not connect
 ```bash
-# Verificar estado de PostgreSQL
+# Check PostgreSQL status
 docker compose logs postgres
 
-# Reiniciar base de datos
+# Restart the database
 docker compose restart postgres
 ```
 
-### MQTT Broker no Responde
+### MQTT broker does not respond
 ```bash
-# Verificar configuración Mosquitto
+# Check Mosquitto configuration
 docker compose logs mosquitto
 
-# Verificar puertos
+# Check ports
 netstat -an | grep 1883
 ```
 
-### Servicio no Inicia
+### A service does not start
 ```bash
-# Verificar logs del servicio
+# Check the service logs
 docker compose logs <service-name>
 
-# Verificar variables de entorno
+# Check environment variables
 docker compose config
 ```
 
-### Limpiar Sistema Completo
+### Reset the full system
 ```bash
 npm run docker:clean
 npm run clean
 npm run install:all
 ```
 
-## Raspberry Pi y MQTT 1883
+## Raspberry Pi and MQTT 1883
 
-Los ESP32 publican en `cosva-pi.local:1883`. El compose expone ese puerto del host. Si Raspberry Pi OS ya tiene Mosquitto por systemd, Docker falla con `bind: address already in use`. Antes de `docker compose up`:
+ESP32 devices publish to `cosva-pi.local:1883`. Compose exposes that host port. If Raspberry Pi OS already runs Mosquitto through systemd, Docker fails with `bind: address already in use`. Before `docker compose up`:
 
 ```bash
 sudo systemctl disable --now mosquitto
 ```
 
-`API_KEY` debe ser el JWT de `signIn` de cosva-api (`x-token`). Sin red el ordeño sigue; el botón **Sincronizar animales** es el que baja vacas, cabras y el resto.
+## Farm API key
 
-Cada puesto en `config.yml` ata `rfid_id` (el id del firmware, por ejemplo `reader-01`) y `scale_id` (`scale-01`).
+`API_KEY` is a Cosva farm API key. It starts with `csk_` and is sent as `Authorization: Bearer`. It is not a user session JWT.
 
-## Iterar sin publicar paquetes
+A farm **Owner**, or a platform **Admin** who is not a member of the farm, creates it with their own user JWT against `POST {API_BASE_URL}/graphql`. The full secret is returned only once. Copy it into `.env` and do not commit it.
 
-Los servicios consumen `@cosva-lab/iot-*` desde `vendor/` (copias del `dist` de `cosva-iot`). Con ambos repos como hermanos:
-
-```bash
-cd ../cosva-iot
-npm install
-npm run build
-
-cd ../cosva-iot-app
-npm run vendor:packages
-npm install
-npm start
+```graphql
+mutation CreateFarmApiKey($farmId: ID!, $input: CreateFarmApiKeyInput!) {
+  createFarmApiKey(farmId: $farmId, input: $input) {
+    secret
+    apiKey {
+      id
+      name
+      keyPrefix
+      scopes
+    }
+  }
+}
 ```
 
-`npm run docker:up` ya corre `vendor:packages` en el `predocker:up`.
+```json
+{
+  "farmId": "<farm id>",
+  "input": { "name": "Parlor Pi" }
+}
+```
 
-También puedes usar `npm link` hacia `../cosva-iot/packages/*` si prefieres no regenerar `vendor/` en cada cambio.
+Omit `scopes` to grant the parlor preset:
 
-Publica a GitHub Packages solo cuando la Pi deba tomar una versión cerrada; entonces cambia los `file:./vendor/...` por `^1.1.0` y corre `npm run update` en cada servicio.
+| Scope | What the parlor can do |
+| --- | --- |
+| `ANIMALS_READ` | Read animals (RFID, plaque, lactation, reproductive cycle, mastitis, treatments, group memberships) and animal groups |
+| `MILKING_SLOTS_READ` | Read farm milking slots |
+| `MILK_UOM_READ` | Read the farm milk unit (liters or kilograms, global or per species). Stored production stays in liters |
+| `MILK_WRITE` | Create and edit milk production. Send `source` as `IOT` or `OPERATOR`. The same animal, slot, and day updates the existing row |
 
-## 📞 Soporte
+The key cannot delete milk or call the rest of the API. It keeps working until it is revoked or it expires, even if the person who created it is not a farm member.
 
-Para soporte técnico:
-- **Documentación**: Este README
-- **Issues**: Reportar en el repositorio
-- **Logs**: Incluir logs relevantes en reportes
+```graphql
+query FarmApiKeys($farmId: ID!) {
+  farmApiKeys(farmId: $farmId) {
+    id
+    name
+    keyPrefix
+    scopes
+    lastUsedAt
+    revokedAt
+  }
+}
 
-## 📄 Licencia
+mutation RevokeFarmApiKey($id: ID!) {
+  revokeFarmApiKey(id: $id) {
+    id
+    revokedAt
+  }
+}
+```
 
-Este proyecto es propietario de COSVA Lab.
+Milking continues without a network. **Sync animals** is what downloads cows, goats, and the rest when the API is reachable.
+
+Each stall in `config.yml` binds `rfid_id` (the firmware id, for example `reader-01`) and `scale_id` (`scale-01`).
+
+## Iterate without publishing packages
+
+Services consume `@cosva-lab/iot-*` from `vendor/` (copies of the `dist` from `cosva-iot`).
+
+`npm run docker:up` already runs `vendor:packages` via `predocker:up`.
+
+Publish to GitHub Packages only when the Pi should take a released version. Then replace the `file:./vendor/...` dependencies with `^1.1.0` and run `npm run update` in each service.
+
+## 📞 Support
+
+For technical support:
+- **Documentation**: This README
+- **Issues**: Report them in the repository
+- **Logs**: Include relevant logs in reports
+
+## 📄 License
+
+This project is proprietary to COSVA Lab.
 
 ---
 
-**COSVA IoT Smart Farm System** - Tecnología avanzada para granjas del futuro 🐄🚀
+**COSVA IoT Smart Farm System** - Advanced technology for the farms of the future 🐄🚀

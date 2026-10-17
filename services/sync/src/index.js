@@ -10,4 +10,5 @@ run({
   database: config.database,
   mqtt: config.mqtt,
   farm: config.farm,
+  milking: config.milking,
 });

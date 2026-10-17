@@ -10,7 +10,7 @@ COPY services/sync/ ./services/sync/
 # Install dependencies
 WORKDIR /app
 
-RUN npm i
+RUN npm i && npx prisma generate
 
 WORKDIR /app/services/sync
 

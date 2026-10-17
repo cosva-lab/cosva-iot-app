@@ -17,6 +17,9 @@ COPY vendor/ ./vendor/
 # Install all dependencies
 RUN npm i
 
+# Prisma Client must match vendored iot-db schema (rfid_uhf / rfid_lf, etc.)
+RUN npx prisma generate
+
 # Stage 2: Final image
 FROM node:22-alpine
 

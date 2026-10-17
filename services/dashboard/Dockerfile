@@ -10,7 +10,7 @@ COPY services/dashboard/ ./services/dashboard/
 # Install dependencies
 WORKDIR /app
 
-RUN npm i
+RUN npm i && npx prisma generate
 
 WORKDIR /app/services/dashboard
 
