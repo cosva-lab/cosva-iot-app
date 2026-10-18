@@ -105,3 +105,10 @@ milking:
   min_milk_kg: 0.05
   milk_density_kg_per_liter: 1.03
   treatment_lookback_days: 7
+  # real | simulated — simulated blocks Cosva upload + skips equipment Start gate
+  data_source: real
+  # true = show Demo milking button in parlor UI (local demos only)
+  demo_ui: false
+  # Optional: lock parlor to Cosva animal groups (hato/rebaño). Omit to filter in UI.
+  # herd_filter_group_ids: ['123']
+  # herd_filter_group_names: ['Lote A']

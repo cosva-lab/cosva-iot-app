@@ -23,7 +23,8 @@
     "dev:reload:services": "./scripts/dev/reload-services.sh",
     "dev:up": "docker compose up -d",
     "dev:logs": "docker compose logs -f dashboard-service sensor-service sync-service",
-    "dev:ps": "docker compose ps"
+    "dev:ps": "docker compose ps",
+    "demo:milking": "node demo/scripts/simulate-milking.js"
   },
   "dependencies": {
     "@cosva-lab/iot-db": "file:./vendor/@cosva-lab/iot-db",
