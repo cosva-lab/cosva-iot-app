@@ -6,49 +6,83 @@ farm:
   id: 'farm-001'
   name: 'Main Dairy Farm'
 
-# Stalls configuration
+# Each stall has one meter: type + id.
+#
+# Scale (production = Δweight). id is the MQTT device in cosva/scale/<id>/...
+# machine_weight_kg is the extra kg while the cluster is on the animal (0 = off).
+# Measure it: note the weight with the cluster on, hang it, note the weight that stays.
+# The difference is the value. Do not guess. Cap is 5 kg.
+#   Goats, this hardware: 1.00 kg on the animal, 0.94 kg once hung → 0.060
+#   Cows: same measurement. The cluster is heavier, often 1–3 kg.
+#   measurement:
+#     type: scale
+#     id: scale-01
+#     machine_weight_kg: 0.060
+#
+# Flow meter:
+#   measurement:
+#     type: flow
+#     id: flow-01
+#
+# Volumetric jar (liters):
+#   measurement:
+#     type: volume
+#     id: jar-01
 stalls:
   - id: 'stall-001'
     number: 1
     sensor_id: 'RFID01'
     rfid_id: 'reader-01'
-    scale_id: 'scale-01'
     status: 'available'
+    measurement:
+      type: scale
+      id: 'scale-01'
+      machine_weight_kg: 0.060
 
   - id: 'stall-002'
     number: 2
     sensor_id: 'RFID02'
     rfid_id: 'reader-02'
-    scale_id: 'scale-02'
     status: 'available'
+    measurement:
+      type: flow
+      id: 'flow-02'
 
   - id: 'stall-003'
     number: 3
     sensor_id: 'RFID03'
     rfid_id: 'reader-03'
-    scale_id: 'scale-03'
     status: 'available'
+    measurement:
+      type: volume
+      id: 'jar-03'
 
   - id: 'stall-004'
     number: 4
     sensor_id: 'RFID04'
     rfid_id: 'reader-04'
-    scale_id: 'scale-04'
     status: 'available'
+    measurement:
+      type: scale
+      id: 'scale-04'
 
   - id: 'stall-005'
     number: 5
     sensor_id: 'RFID05'
     rfid_id: 'reader-05'
-    scale_id: 'scale-05'
     status: 'available'
+    measurement:
+      type: scale
+      id: 'scale-05'
 
   - id: 'stall-006'
     number: 6
     sensor_id: 'RFID06'
     rfid_id: 'reader-06'
-    scale_id: 'scale-06'
     status: 'available'
+    measurement:
+      type: scale
+      id: 'scale-06'
 
 # Sensor configuration
 sensors:
@@ -94,6 +128,28 @@ sensors:
     baud_rate: 9600
     timeout: 2
 
+# Same keys for goats and cows. Only the kilograms change.
+# Density follows animal_kind (BOVINE ≈ 1.03, CAPRINE ≈ 1.032, OVINE ≈ 1.036)
+# unless milk_density_kg_per_liter is set.
+#
+# Goats (scale already tared, hose tied, cluster measured at 0.060 kg):
+#   animal_kind: CAPRINE
+#   noise_kg: 0.05                 # a quiet reading stays inside this
+#   milk_stable_seconds: 2.5       # a higher weight must hold this long
+#   container_drop_kg: 0.5         # a can swap; must be larger than the cluster
+#   tare_min_kg: 1.0               # empty can
+#   tare_max_kg: 9.0
+#   min_milk_kg: 0.05
+#   stalls[].measurement.machine_weight_kg: 0.060
+#
+# Cows (measure the cluster; do not copy 0.060):
+#   animal_kind: BOVINE
+#   noise_kg: 0.20                 # widen if the liters jump while the can sits still
+#   milk_stable_seconds: 2.5       # cows rise faster; the same hold is enough
+#   container_drop_kg: 5           # a can swap, several kg, larger than the cluster
+#   tare_min_kg / tare_max_kg:     # weight of the empty can on that scale
+#   min_milk_kg: 0.3               # sessions below this are discarded
+#   stalls[].measurement.machine_weight_kg:  # the measured hang drop, often 1–3
 milking:
   noise_kg: 0.05
   container_drop_kg: 0.5
@@ -102,13 +158,22 @@ milking:
   tare_max_kg: 9.0
   empty_platform_kg: 0.5
   occupancy_grace_seconds: 40
+  # A scan must be the only id on the antenna for this long before it replaces the animal.
+  presence_stable_seconds: 1.5
+  # A higher scale reading becomes milk only after it holds this long.
+  milk_stable_seconds: 2.5
   min_milk_kg: 0.05
-  milk_density_kg_per_liter: 1.03
+  # BOVINE | CAPRINE | OVINE. Drives the kg → liter density.
+  animal_kind: BOVINE
+  # Omit so density follows animal_kind. Set only to override it.
+  # milk_density_kg_per_liter: 1.03
   treatment_lookback_days: 7
   # real | simulated — simulated blocks Cosva upload + skips equipment Start gate
   data_source: real
   # true = show Demo milking button in parlor UI (local demos only)
   demo_ui: false
+  # Can on the scale. Usually 40 L for goats and for cows.
+  cantina_capacity_l: 40
   # Optional: lock parlor to Cosva animal groups (hato/rebaño). Omit to filter in UI.
   # herd_filter_group_ids: ['123']
   # herd_filter_group_names: ['Lote A']
