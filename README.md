@@ -16,6 +16,10 @@ npm run dev:reload:dashboard   # dashboard only
 npm run dev:reload:services    # db + sensor + sync + dashboard
 ```
 
+Dirty edge Postgres during development: `npm run dev:reset-db` (prefer wipe+resync over migration shims — pre-production).
+
+**Product specs / agent context** live in the sibling repo: [`cosva-iot/docs/sdd/`](../cosva-iot/docs/sdd/README.md) — especially [`08-agent-context.md`](../cosva-iot/docs/sdd/08-agent-context.md) (identity, offline milk sync, farmDate, sync UX, code paths).
+
 
 ## 🚀 Main features
 
@@ -115,6 +119,7 @@ NODE_ENV=production
 - **Sensors**: Define the RFID sensors (serial or WiFi) for each stall
 - **Serial ports**: Adjust `/dev/ttyUSB*` to match your hardware
 - **WiFi IPs**: Set the IP addresses of wireless sensors
+- **Goats or cows**: same keys, different kilograms. `config.example.yml` has both profiles under `milking`. Set `animal_kind` (`CAPRINE` or `BOVINE`) and measure `machine_weight_kg` on each scale stall: weight with the cluster on the animal, minus the weight once it is hung again. On the goat stall that was 1.00 kg → 0.94 kg, so `0.060`. A cow cluster is heavier; do not reuse `0.060`. `container_drop_kg` has to be a real can swap, larger than that cluster.
 
 ### 3. Configure access to private packages
 
@@ -558,11 +563,15 @@ Each stall in `config.yml` binds `rfid_id` (the firmware id, for example `reader
 
 ## Iterate without publishing packages
 
-Services consume `@cosva-lab/iot-*` from `vendor/` (copies of the `dist` from `cosva-iot`).
+Local loop (bind-mounts `cosva-iot` `dist/` and restarts Node on save):
 
-`npm run docker:up` already runs `vendor:packages` via `predocker:up`.
+```bash
+npm run dev:watch
+```
 
-Publish to GitHub Packages only when the Pi should take a released version. Then replace the `file:./vendor/...` dependencies with `^1.1.0` and run `npm run update` in each service.
+Parlor UI hot reload stays in `cosva-iot`: `npm run dev:ui` → http://localhost:3001.
+
+`npm run docker:up` still vendors `dist` into `vendor/` and bakes it into the image. That is the Pi path. Publish to GitHub Packages only when the Pi should take a released version. Then replace the `file:./vendor/...` dependencies with `^1.1.0` and run `npm run update` in each service.
 
 ## 📞 Support
 

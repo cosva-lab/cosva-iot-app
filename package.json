@@ -19,12 +19,13 @@
     "docker:clean": "./scripts/clean-docker.sh",
     "clean": "rm -rf node_modules && rm -rf */node_modules && rm -rf */*/node_modules",
     "install:all": "npm install && npm install --workspaces",
+    "dev:watch": "./scripts/dev/watch.sh",
     "dev:reload:dashboard": "./scripts/dev/reload-dashboard.sh",
     "dev:reload:services": "./scripts/dev/reload-services.sh",
+    "dev:reset-db": "./scripts/dev/reset-db.sh",
     "dev:up": "docker compose up -d",
     "dev:logs": "docker compose logs -f dashboard-service sensor-service sync-service",
-    "dev:ps": "docker compose ps",
-    "demo:milking": "node demo/scripts/simulate-milking.js"
+    "dev:ps": "docker compose ps"
   },
   "dependencies": {
     "@cosva-lab/iot-db": "file:./vendor/@cosva-lab/iot-db",
