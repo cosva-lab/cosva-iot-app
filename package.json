@@ -25,11 +25,12 @@
     "dev:reset-db": "./scripts/dev/reset-db.sh",
     "dev:up": "docker compose up -d",
     "dev:logs": "docker compose logs -f dashboard-service sensor-service sync-service",
-    "dev:ps": "docker compose ps"
+    "dev:ps": "docker compose ps",
+    "sim": "npm --prefix cli run start --"
   },
   "dependencies": {
-    "@cosva-lab/iot-db": "file:./vendor/@cosva-lab/iot-db",
-    "@cosva-lab/iot-shared": "file:./vendor/@cosva-lab/iot-shared",
+    "@cosva-lab/iot-db": "^1.2.1",
+    "@cosva-lab/iot-shared": "^1.2.1",
     "@prisma/client": "^6.16.2",
     "prisma": "^6.16.2"
   },

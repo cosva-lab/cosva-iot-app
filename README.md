@@ -18,6 +18,17 @@ npm run dev:reload:services    # db + sensor + sync + dashboard
 
 Dirty edge Postgres during development: `npm run dev:reset-db` (prefer wipe+resync over migration shims — pre-production).
 
+**Sensor simulator** (host MQTT, same topics as the firmware). Install once, then drive scales, RFID, and a queue of animals:
+
+```bash
+cd cli && npm install
+npm run sim
+npm run sim -- weight --stall 1 --kg 4.2
+npm run sim -- milk --queue 1:COSV_ID:1.3,1:COSV_ID:0.670
+```
+
+Bring equipment online, open the parlor on the dashboard, then scan and milk. `--animal` is the Cosva id.
+
 **Product specs / agent context** live in the sibling repo: [`cosva-iot/docs/sdd/`](../cosva-iot/docs/sdd/README.md) — especially [`08-agent-context.md`](../cosva-iot/docs/sdd/08-agent-context.md) (identity, offline milk sync, farmDate, sync UX, code paths).
 
 
