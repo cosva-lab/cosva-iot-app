@@ -2,35 +2,19 @@
 
 A complete IoT system for smart dairy farms, built as a Node.js microservices architecture and deployed with containers.
 
-## Local development
+## Running the farm stack
 
-This repo runs the farm stack (Docker, `config.yml`, `.env`). It consumes published packages (`@cosva-lab/*`) from GitHub Packages by default.
+This repo runs the farm stack (Docker, `config.yml`, `.env`) for clients. It consumes published packages (`@cosva-lab/*`) from GitHub Packages.
 
-```bash
-npm run install:all
-npm run docker:up
-npm run db:migrate
-```
-
-For live local development alongside the **cosva-iot** monorepo:
-```bash
-npm run dev:watch                  # Live reload with bind-mounts from sibling cosva-iot
-npm run dev:reload:dashboard       # Rebuild cosva-iot dashboard and recreate container
-npm run dev:reload:services        # Rebuild cosva-iot services, migrate and recreate
-```
-
-Dirty edge Postgres during development: `npm run dev:reset-db` (prefer wipe+resync over migration shims — pre-production).
-
-**Sensor simulator** (host MQTT, same topics as the firmware). Install once, then drive scales, RFID, and a queue of animals:
+First boot and later updates (drops this project's old images, rebuilds from `package.json`, starts that result, migrates). Postgres data is kept.
 
 ```bash
-cd cli && npm install
-npm run sim
-npm run sim -- weight --stall 1 --kg 4.2
-npm run sim -- milk --queue 1:COSV_ID:1.3,1:COSV_ID:0.670
+npm run up
 ```
 
-Bring equipment online, open the parlor on the dashboard, then scan and milk. `--animal` is the Cosva id.
+`npm run docker:up` only starts images that already exist. It does not rebuild.
+
+> **Developing Cosva IoT?** Use the [`cosva-iot`](../cosva-iot/README.md) monorepo instead: `npm run dev` there starts Postgres + Mosquitto in Docker and runs every service from source with watch/reload, plus the sensor simulator (`npm run sim`). No npm publish needed.
 
 **Product specs / agent context** live in the sibling repo: [`cosva-iot/docs/sdd/`](../cosva-iot/docs/sdd/README.md) — especially [`08-agent-context.md`](../cosva-iot/docs/sdd/08-agent-context.md) (identity, offline milk sync, farmDate, sync UX, code paths).
 
@@ -208,14 +192,12 @@ npm run docker:prod:down
 
 ## 🔧 Available scripts
 
-### Development
-- `npm run dev:watch` — Live reload with local packages from `cosva-iot`
-- `npm run dev:reload:dashboard` — Rebuild cosva-iot dashboard and recreate container
-- `npm run dev:reload:services` — Rebuild cosva-iot packages, run migrations, and recreate app services
-- `npm start` — Run app services locally (without Docker app containers)
-- `npm run docker:up` / `dev:up` — Start Docker stack
+### Operation
+- `npm run up` — Rebuild images from `package.json` and start the stack
+- `npm run docker:up` — Start the existing images
 - `npm run docker:down` — Stop stack
-- `npm run dev:logs` / `dev:ps` — Logs and container status
+- `npm run docker:logs` / `docker:ps` — Logs and container status
+- `npm run update` — Bump services to the latest published packages
 
 
 ### Production
@@ -577,16 +559,8 @@ Milking continues without a network. **Sync animals** is what downloads cows, go
 Each stall in `config.yml` binds `rfid_id` (the firmware id, for example `reader-01`) and `scale_id` (`scale-01`).
 
 ## Iterate without publishing packages
- 
-Local loop (bind-mounts `cosva-iot` `dist/` directly into container `node_modules` and restarts Node on save):
- 
-```bash
-npm run dev:watch
-```
- 
-Parlor UI hot reload stays in `cosva-iot`: `npm run dev:ui` → http://localhost:3001.
 
-In production and on other machines, `npm run docker:up` builds and runs directly with the published packages from GitHub Packages (`https://npm.pkg.github.com`).
+Development happens in [`cosva-iot`](../cosva-iot/docs/LOCAL_DEV.md) (`npm run dev`). This repo always runs the published packages from GitHub Packages (`https://npm.pkg.github.com`).
 
 ## 📞 Support
 

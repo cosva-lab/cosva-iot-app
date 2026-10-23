@@ -23,6 +23,7 @@ user sync_service
 topic read sensors/rfid/+/detections
 topic read sensors/rfid/+/presence
 topic read milking/#
+topic write cosva/service/sync/version
 
 # Dashboard service
 user dashboard_service

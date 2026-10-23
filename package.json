@@ -6,30 +6,24 @@
     "services/*"
   ],
   "scripts": {
-    "start": "turbo run start --parallel --filter=@cosva-lab/sensor-service --filter=@cosva-lab/sync-service --filter=@cosva-lab/dashboard-service",
     "update": "turbo run update",
     "predocker:up": "npm run build:shared",
+    "up": "bash scripts/docker/rebuild.sh",
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f dashboard-service sensor-service sync-service",
+    "docker:ps": "docker compose ps",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate deploy",
     "db:seed": "node scripts/seed/index.js",
     "build:shared": "./scripts/docker/build-shared-base.sh",
     "docker:clean": "./scripts/clean-docker.sh",
     "clean": "rm -rf node_modules && rm -rf */node_modules && rm -rf */*/node_modules",
-    "install:all": "npm install && npm install --workspaces",
-    "dev:watch": "./scripts/dev/watch.sh",
-    "dev:reload:dashboard": "./scripts/dev/reload-dashboard.sh",
-    "dev:reload:services": "./scripts/dev/reload-services.sh",
-    "dev:reset-db": "./scripts/dev/reset-db.sh",
-    "dev:up": "docker compose up -d",
-    "dev:logs": "docker compose logs -f dashboard-service sensor-service sync-service",
-    "dev:ps": "docker compose ps",
-    "sim": "npm --prefix cli run start --"
+    "install:all": "npm install && npm install --workspaces"
   },
   "dependencies": {
     "@cosva-lab/iot-db": "^1.2.1",
-    "@cosva-lab/iot-shared": "^1.2.1",
+    "@cosva-lab/iot-shared": "^1.2.2",
     "@prisma/client": "^6.16.2",
     "prisma": "^6.16.2"
   },

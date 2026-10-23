@@ -11,7 +11,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@cosva-lab/iot-dashboard": "^1.2.1",
+    "@cosva-lab/iot-dashboard": "^1.2.5",
     "@prisma/client": "^6.16.2"
   }
 }

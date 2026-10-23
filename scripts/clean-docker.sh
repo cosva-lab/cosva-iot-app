@@ -26,5 +26,5 @@ docker network prune -f
 
 echo "✅ Docker cleanup completed!"
 echo ""
-echo "🚀 To rebuild and start:"
-echo "  npm run start:prod"
+echo "To rebuild from package.json and start:"
+echo "  npm run up"
