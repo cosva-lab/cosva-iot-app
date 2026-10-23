@@ -4,16 +4,19 @@ A complete IoT system for smart dairy farms, built as a Node.js microservices ar
 
 ## Local development
 
-This repo runs the farm stack (Docker, `config.yml`, `.env`). Package source lives in **cosva-iot**; build there, then vendor here.
+This repo runs the farm stack (Docker, `config.yml`, `.env`). It consumes published packages (`@cosva-lab/*`) from GitHub Packages by default.
 
 ```bash
+npm run install:all
 npm run docker:up
 npm run db:migrate
+```
 
-# After building packages in the cosva-iot repo:
-npm run vendor:packages
-npm run dev:reload:dashboard   # dashboard only
-npm run dev:reload:services    # db + sensor + sync + dashboard
+For live local development alongside the **cosva-iot** monorepo:
+```bash
+npm run dev:watch                  # Live reload with bind-mounts from sibling cosva-iot
+npm run dev:reload:dashboard       # Rebuild cosva-iot dashboard and recreate container
+npm run dev:reload:services        # Rebuild cosva-iot services, migrate and recreate
 ```
 
 Dirty edge Postgres during development: `npm run dev:reset-db` (prefer wipe+resync over migration shims — pre-production).
@@ -206,8 +209,9 @@ npm run docker:prod:down
 ## 🔧 Available scripts
 
 ### Development
-- `npm run dev:reload:dashboard` — Build + vendor + recreate dashboard
-- `npm run dev:reload:services` — Rebuild packages + migrate + recreate app services
+- `npm run dev:watch` — Live reload with local packages from `cosva-iot`
+- `npm run dev:reload:dashboard` — Rebuild cosva-iot dashboard and recreate container
+- `npm run dev:reload:services` — Rebuild cosva-iot packages, run migrations, and recreate app services
 - `npm start` — Run app services locally (without Docker app containers)
 - `npm run docker:up` / `dev:up` — Start Docker stack
 - `npm run docker:down` — Stop stack
@@ -573,16 +577,16 @@ Milking continues without a network. **Sync animals** is what downloads cows, go
 Each stall in `config.yml` binds `rfid_id` (the firmware id, for example `reader-01`) and `scale_id` (`scale-01`).
 
 ## Iterate without publishing packages
-
-Local loop (bind-mounts `cosva-iot` `dist/` and restarts Node on save):
-
+ 
+Local loop (bind-mounts `cosva-iot` `dist/` directly into container `node_modules` and restarts Node on save):
+ 
 ```bash
 npm run dev:watch
 ```
-
+ 
 Parlor UI hot reload stays in `cosva-iot`: `npm run dev:ui` → http://localhost:3001.
 
-`npm run docker:up` still vendors `dist` into `vendor/` and bakes it into the image. That is the Pi path. Publish to GitHub Packages only when the Pi should take a released version. Then replace the `file:./vendor/...` dependencies with `^1.1.0` and run `npm run update` in each service.
+In production and on other machines, `npm run docker:up` builds and runs directly with the published packages from GitHub Packages (`https://npm.pkg.github.com`).
 
 ## 📞 Support
 

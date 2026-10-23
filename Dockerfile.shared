@@ -11,13 +11,10 @@ WORKDIR /app
 COPY package*.json ./
 COPY .npmrc ./
 COPY prisma.config.ts ./
-# Local @cosva-lab packages (file:./vendor/...) — must be present before npm i
-COPY vendor/ ./vendor/
-
-# Install all dependencies
+# Install all dependencies from GitHub Packages using .npmrc
 RUN npm i
 
-# Prisma Client must match vendored iot-db schema (rfid_uhf / rfid_lf, etc.)
+# Prisma Client from @cosva-lab/iot-db schema
 RUN npx prisma generate
 
 # Stage 2: Final image

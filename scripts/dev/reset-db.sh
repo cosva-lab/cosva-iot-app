@@ -4,8 +4,6 @@
 set -euo pipefail
 cd "$(dirname "$0")/../.."
 
-echo "→ Vendoring latest @cosva-lab packages…"
-npm run vendor:packages
 
 echo "→ Stopping stack and removing volumes (postgres, redis, animal images)…"
 docker compose down -v --remove-orphans

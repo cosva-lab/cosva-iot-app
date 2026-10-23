@@ -6,8 +6,7 @@ RUN apk add --no-cache su-exec
 
 WORKDIR /app
 
-# Copy source code + vendored packages (file: deps)
-COPY vendor/ ./vendor/
+# Copy source code
 COPY services/dashboard/ ./services/dashboard/
 COPY services/dashboard/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh \

@@ -3,8 +3,7 @@ FROM cosva-shared-base:latest
 
 WORKDIR /app
 
-# Copy source code + vendored packages (file: deps)
-COPY vendor/ ./vendor/
+# Copy source code
 COPY services/sync/ ./services/sync/
 
 # Install dependencies

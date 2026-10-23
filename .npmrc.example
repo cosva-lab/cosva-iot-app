@@ -1,5 +1,8 @@
 registry=https://registry.npmjs.org
 
-# Cosva Lab organization
+# Cosva Lab GitHub Packages Registry
 @cosva-lab:registry=https://npm.pkg.github.com
-//npm.pkg.github.com/:_authToken=ghp_gABCDEFECDXDCDSDD
+
+# GitHub Personal Access Token (PAT) with read:packages permission
+# Set GITHUB_TOKEN environment variable or replace directly below:
+//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}

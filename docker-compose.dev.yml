@@ -2,13 +2,13 @@
 #   docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
 # Or: npm run dev:watch
 #
-# Bind-mounts cosva-iot dist/ into the vendored packages and polls for changes.
+# Bind-mounts cosva-iot dist/ into node_modules and polls for changes.
 # No image rebuild. Obfuscation stays off because dev:watch builds with ROLLUP_OBFUSCATE=0.
 
 x-dev-env: &dev-env
   NODE_ENV: development
   DEV_APP_ROOT: /app
-  DEV_PRISMA: /app/vendor/@cosva-lab/iot-db/prisma
+  DEV_PRISMA: /app/node_modules/@cosva-lab/iot-db/prisma
   DEV_POLL_MS: "200"
 
 services:
@@ -19,12 +19,12 @@ services:
     environment:
       <<: *dev-env
       DEV_CWD: /app/services/dashboard
-      DEV_WATCH: /app/vendor/@cosva-lab/iot-dashboard/dist/index.js,/app/vendor/@cosva-lab/iot-db/dist/index.js,/app/vendor/@cosva-lab/iot-shared/dist/index.js
+      DEV_WATCH: /app/node_modules/@cosva-lab/iot-dashboard/dist/index.js,/app/node_modules/@cosva-lab/iot-db/dist/index.js,/app/node_modules/@cosva-lab/iot-shared/dist/index.js
     volumes:
-      - ../cosva-iot/packages/dashboard/dist:/app/vendor/@cosva-lab/iot-dashboard/dist
-      - ../cosva-iot/packages/db/dist:/app/vendor/@cosva-lab/iot-db/dist
-      - ../cosva-iot/packages/db/prisma:/app/vendor/@cosva-lab/iot-db/prisma
-      - ../cosva-iot/packages/shared/dist:/app/vendor/@cosva-lab/iot-shared/dist
+      - ../cosva-iot/packages/dashboard/dist:/app/node_modules/@cosva-lab/iot-dashboard/dist
+      - ../cosva-iot/packages/db/dist:/app/node_modules/@cosva-lab/iot-db/dist
+      - ../cosva-iot/packages/db/prisma:/app/node_modules/@cosva-lab/iot-db/prisma
+      - ../cosva-iot/packages/shared/dist:/app/node_modules/@cosva-lab/iot-shared/dist
       - ./scripts/dev/watch-service.mjs:/app/scripts/dev/watch-service.mjs:ro
 
   sensor-service:
@@ -35,12 +35,12 @@ services:
       <<: *dev-env
       DEV_CWD: /app/services/sensor
       DEV_MIGRATE: "0"
-      DEV_WATCH: /app/vendor/@cosva-lab/iot-sensor/dist/index.js,/app/vendor/@cosva-lab/iot-db/dist/index.js,/app/vendor/@cosva-lab/iot-shared/dist/index.js
+      DEV_WATCH: /app/node_modules/@cosva-lab/iot-sensor/dist/index.js,/app/node_modules/@cosva-lab/iot-db/dist/index.js,/app/node_modules/@cosva-lab/iot-shared/dist/index.js
     volumes:
-      - ../cosva-iot/packages/sensor/dist:/app/vendor/@cosva-lab/iot-sensor/dist
-      - ../cosva-iot/packages/db/dist:/app/vendor/@cosva-lab/iot-db/dist
-      - ../cosva-iot/packages/db/prisma:/app/vendor/@cosva-lab/iot-db/prisma
-      - ../cosva-iot/packages/shared/dist:/app/vendor/@cosva-lab/iot-shared/dist
+      - ../cosva-iot/packages/sensor/dist:/app/node_modules/@cosva-lab/iot-sensor/dist
+      - ../cosva-iot/packages/db/dist:/app/node_modules/@cosva-lab/iot-db/dist
+      - ../cosva-iot/packages/db/prisma:/app/node_modules/@cosva-lab/iot-db/prisma
+      - ../cosva-iot/packages/shared/dist:/app/node_modules/@cosva-lab/iot-shared/dist
       - ./scripts/dev/watch-service.mjs:/app/scripts/dev/watch-service.mjs:ro
 
   sync-service:
@@ -51,10 +51,10 @@ services:
       <<: *dev-env
       DEV_CWD: /app/services/sync
       DEV_MIGRATE: "0"
-      DEV_WATCH: /app/vendor/@cosva-lab/iot-sync/dist/index.js,/app/vendor/@cosva-lab/iot-db/dist/index.js,/app/vendor/@cosva-lab/iot-shared/dist/index.js
+      DEV_WATCH: /app/node_modules/@cosva-lab/iot-sync/dist/index.js,/app/node_modules/@cosva-lab/iot-db/dist/index.js,/app/node_modules/@cosva-lab/iot-shared/dist/index.js
     volumes:
-      - ../cosva-iot/packages/sync/dist:/app/vendor/@cosva-lab/iot-sync/dist
-      - ../cosva-iot/packages/db/dist:/app/vendor/@cosva-lab/iot-db/dist
-      - ../cosva-iot/packages/db/prisma:/app/vendor/@cosva-lab/iot-db/prisma
-      - ../cosva-iot/packages/shared/dist:/app/vendor/@cosva-lab/iot-shared/dist
+      - ../cosva-iot/packages/sync/dist:/app/node_modules/@cosva-lab/iot-sync/dist
+      - ../cosva-iot/packages/db/dist:/app/node_modules/@cosva-lab/iot-db/dist
+      - ../cosva-iot/packages/db/prisma:/app/node_modules/@cosva-lab/iot-db/prisma
+      - ../cosva-iot/packages/shared/dist:/app/node_modules/@cosva-lab/iot-shared/dist
       - ./scripts/dev/watch-service.mjs:/app/scripts/dev/watch-service.mjs:ro

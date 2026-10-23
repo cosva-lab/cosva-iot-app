@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Rebuild packages → vendor → migrate → recreate app services.
+# Rebuild packages in cosva-iot → migrate → recreate app services.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
@@ -31,9 +31,6 @@ fi
 if [[ "$WITH_SYNC" == "1" ]]; then
   (cd "$IOT/packages/sync" && npm run build)
 fi
-
-echo "→ Vendoring…"
-(cd "$ROOT" && npm run vendor:packages)
 
 echo "→ Migrating DB…"
 (cd "$ROOT" && npm run db:migrate)

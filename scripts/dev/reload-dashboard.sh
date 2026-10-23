@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build dashboard in cosva-iot → vendor → recreate dashboard-service.
+# Build dashboard in cosva-iot → recreate dashboard-service.
 # For UI-only hot reload use: cd ../cosva-iot && npm run dev:ui
 set -euo pipefail
 
@@ -14,9 +14,6 @@ fi
 
 echo "→ Building @cosva-lab/iot-dashboard…"
 (cd "$DASHBOARD" && npm run build)
-
-echo "→ Vendoring packages…"
-(cd "$ROOT" && npm run vendor:packages)
 
 echo "→ Rebuilding & recreating dashboard-service…"
 (cd "$ROOT" && docker compose build dashboard-service && \
