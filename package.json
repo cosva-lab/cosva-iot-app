@@ -10,6 +10,7 @@
     "predocker:up": "npm run build:shared",
     "up": "bash scripts/docker/rebuild.sh",
     "docker:up": "docker compose up -d",
+    "docker:recreate": "docker compose up -d --force-recreate",
     "docker:down": "docker compose down",
     "docker:logs": "docker compose logs -f dashboard-service sensor-service sync-service",
     "docker:ps": "docker compose ps",

@@ -12,7 +12,15 @@ First boot and later updates (drops this project's old images, rebuilds from `pa
 npm run up
 ```
 
-`npm run docker:up` only starts images that already exist. It does not rebuild.
+After changing `.env` or `config.yml`, recreate the containers so Docker Compose applies the updated environment and configuration:
+
+```bash
+npm run docker:recreate
+```
+
+This recreates the containers without rebuilding their images. If you changed application dependencies or need fresh images, use `npm run up` instead.
+
+`npm run docker:up` starts the Compose stack without forcing container recreation.
 
 Run the published sensor simulator from this repository (using its `.env` and `config.yml`):
 
@@ -20,11 +28,6 @@ Run the published sensor simulator from this repository (using its `.env` and `c
 npm run sim -- status
 npm run sim -- animals
 ```
-
-> **Developing Cosva IoT?** Use the [`cosva-iot`](../cosva-iot/README.md) monorepo instead: `npm run dev` there starts Postgres + Mosquitto in Docker and runs every service from source with watch/reload, plus the sensor simulator (`npm run sim`). No npm publish needed.
-
-**Product specs / agent context** live in the sibling repo: [`cosva-iot/docs/sdd/`](../cosva-iot/docs/sdd/README.md) — especially [`08-agent-context.md`](../cosva-iot/docs/sdd/08-agent-context.md) (identity, offline milk sync, farmDate, sync UX, code paths).
-
 
 ## 🚀 Main features
 
@@ -169,58 +172,47 @@ npm run db:generate
 
 ## 🐳 Docker deployment
 
-### Development mode (infrastructure only)
-
-For local development, start only the infrastructure (database, MQTT, Redis, Nginx):
+Start or update the full stack, including the application services:
 
 ```bash
-npm run docker:up
+npm run up
 ```
 
-Application services run locally:
+To stop the stack:
 
 ```bash
-npm start
+npm run docker:down
 ```
 
-### Production mode (full system)
-
-To deploy the full system in production:
+To apply changes to `.env` or `config.yml` without rebuilding the images:
 
 ```bash
-npm run docker:prod
+npm run docker:recreate
 ```
 
-To stop it:
-
-```bash
-npm run docker:prod:down
-```
+The configuration file is mounted into the application containers. Recreating them restarts the services with the updated settings. `npm run docker:recreate` does not rebuild images; use `npm run up` after changing application dependencies or when you need to rebuild.
 
 ## 🔧 Available scripts
 
 ### Operation
-- `npm run up` — Rebuild images from `package.json` and start the stack
-- `npm run docker:up` — Start the existing images
-- `npm run docker:down` — Stop stack
-- `npm run docker:logs` / `docker:ps` — Logs and container status
-- `npm run update` — Bump services to the latest published packages
-
-
-### Production
-- `npm run docker:prod` - Deploy the full system
-- `npm run docker:prod:down` - Stop the full system
+- `npm run up` — Install dependencies, rebuild the application images, start the stack, and run database migrations
+- `npm run docker:up` — Start the Compose stack without forcing container recreation
+- `npm run docker:recreate` — Recreate containers to apply `.env` or `config.yml` changes without rebuilding images
+- `npm run docker:down` — Stop and remove the stack's containers and network
+- `npm run docker:logs` — Follow logs for the dashboard, sensor, and sync services
+- `npm run docker:ps` — Show container status
+- `npm run update` — Update services to the latest published packages
 
 ### Database
-- `npm run db:generate` - Generate the Prisma client
-- `npm run db:migrate` - Run migrations
-- `npm run db:seed` - Seed test data
+- `npm run db:generate` — Generate the Prisma client
+- `npm run db:migrate` — Run database migrations
+- `npm run db:seed` — Seed test data
 
 ### Utilities
-- `npm run build:shared` - Build the shared base image
-- `npm run docker:clean` - Remove containers and volumes
-- `npm run clean` - Remove node_modules
-- `npm run install:all` - Install all dependencies
+- `npm run build:shared` — Build the shared base image
+- `npm run docker:clean` — Stop the stack and clean up local Docker images and unused resources; volumes are preserved
+- `npm run clean` — Remove `node_modules` directories
+- `npm run install:all` — Install root and workspace dependencies
 
 ## 📊 Services
 
@@ -438,20 +430,6 @@ sensor-service:
     # Add more as needed
 ```
 
-### Local development
-
-For development, you can run services individually:
-
-```bash
-# Infrastructure only
-npm run docker:up
-
-# In separate terminals
-cd services/sensor && npm start
-cd services/sync && npm start  
-cd services/dashboard && npm start
-```
-
 ## 🔒 Security
 
 - **MQTT authentication**: Username and password required
@@ -564,10 +542,6 @@ mutation RevokeFarmApiKey($id: ID!) {
 Milking continues without a network. **Sync animals** is what downloads cows, goats, and the rest when the API is reachable.
 
 Each stall in `config.yml` binds `rfid_id` (the firmware id, for example `reader-01`) and `scale_id` (`scale-01`).
-
-## Iterate without publishing packages
-
-Development happens in [`cosva-iot`](../cosva-iot/docs/LOCAL_DEV.md) (`npm run dev`). This repo always runs the published packages from GitHub Packages (`https://npm.pkg.github.com`).
 
 ## 📞 Support
 
