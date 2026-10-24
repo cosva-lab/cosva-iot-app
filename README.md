@@ -14,6 +14,13 @@ npm run up
 
 `npm run docker:up` only starts images that already exist. It does not rebuild.
 
+Run the published sensor simulator from this repository (using its `.env` and `config.yml`):
+
+```bash
+npm run sim -- status
+npm run sim -- animals
+```
+
 > **Developing Cosva IoT?** Use the [`cosva-iot`](../cosva-iot/README.md) monorepo instead: `npm run dev` there starts Postgres + Mosquitto in Docker and runs every service from source with watch/reload, plus the sensor simulator (`npm run sim`). No npm publish needed.
 
 **Product specs / agent context** live in the sibling repo: [`cosva-iot/docs/sdd/`](../cosva-iot/docs/sdd/README.md) — especially [`08-agent-context.md`](../cosva-iot/docs/sdd/08-agent-context.md) (identity, offline milk sync, farmDate, sync UX, code paths).

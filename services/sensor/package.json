@@ -11,6 +11,6 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@cosva-lab/iot-sensor": "^1.2.3"
+    "@cosva-lab/iot-sensor": "^1.2.4"
   }
 }

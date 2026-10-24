@@ -6,13 +6,14 @@
     "services/*"
   ],
   "scripts": {
-    "update": "turbo run update",
+    "update": "turbo run update && npm i @cosva-lab/iot-shared@latest",
     "predocker:up": "npm run build:shared",
     "up": "bash scripts/docker/rebuild.sh",
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down",
     "docker:logs": "docker compose logs -f dashboard-service sensor-service sync-service",
     "docker:ps": "docker compose ps",
+    "sim": "npm exec --yes --package=@cosva-lab/iot-sim -- cosva-sim",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate deploy",
     "db:seed": "node scripts/seed/index.js",
@@ -23,7 +24,7 @@
   },
   "dependencies": {
     "@cosva-lab/iot-db": "^1.2.1",
-    "@cosva-lab/iot-shared": "^1.2.2",
+    "@cosva-lab/iot-shared": "^1.2.3",
     "@prisma/client": "^6.16.2",
     "prisma": "^6.16.2"
   },
